@@ -60,6 +60,11 @@ html {
   background: var(--accent);
   color: var(--accent-text);
 }
+/* 
+.blog-box h2{
+  font-size: ;
+} */
+
 
 @media (min-width: 1024px) {
   .golden-split > div:first-child {

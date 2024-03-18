@@ -1,0 +1,29 @@
+.blog-box {
+  transition: 100ms ease-in-out;
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+}
+
+.blog-box:hover {
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+  cursor: pointer;
+  transform: scale(1.005);
+}
+
+.blog-container {
+  perspective: 120rem; /* Adjust this value as needed */
+  /* Ensures the container can hold the hover effect */
+  overflow: visible;
+}
+
+.blog-box {
+  transition: transform 0.5s ease;
+  transform: translateZ(0);
+  /* Additional styling for visibility */
+  /* padding: 20px; */
+  /* background-color: lightblue; */
+  /* display: inline-block; */
+}
+
+.blog-box:hover {
+  transform: translateZ(50px); /* Moves the element closer on hover */
+}
