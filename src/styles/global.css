@@ -1,0 +1,80 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url("https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&display=swap");
+
+:root {
+  --five: 1215.98px;
+  --four: 751.53px;
+  --three: 464.48px;
+  --two: 287.07px;
+  --xl: 177.42px;
+  --lg: 109.66px;
+  --md: 67.77px;
+  --sm: 41.89px;
+  --xsm: 25.88px;
+  --xsm2: 16px;
+  --xsm3: 9.89px;
+  --dark-primary: #070510;
+  --dark-primary-text: #fff;
+  --primary: #2e2050;
+  --primary-text: #fbfcfe;
+  --secondary: #c49cd6;
+  --secondary-text: #2e2050;
+  --accent: #674a86;
+  --accent-text: #fff;
+  --background: #ffffff;
+  --background-text: #000;
+}
+
+.jost {
+  font-family: "Jost", sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+}
+html {
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+.background {
+  background: var(--background);
+  color: var(--background-text);
+}
+
+.dark-primary {
+  background: var(--dark-primary);
+  color: var(--dark-primary-text);
+}
+
+.primary {
+  background: var(--primary);
+  color: var(--primary-text);
+}
+.secondary {
+  background: var(--secondary);
+  color: var(--secondary-text);
+}
+.accent {
+  background: var(--accent);
+  color: var(--accent-text);
+}
+
+@media (min-width: 1024px) {
+  .golden-split > div:first-child {
+    width: 38.2%;
+  }
+
+  .golden-split > div:nth-child(2) {
+    width: 61.8%;
+  }
+
+  .golden-split-reverse > div:first-child {
+    width: 38.2%;
+  }
+
+  .golden-split-reverse > div:nth-child(2) {
+    width: 61.8%;
+  }
+}
