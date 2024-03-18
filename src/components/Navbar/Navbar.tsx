@@ -18,9 +18,14 @@ const Navbar: React.FC = () => {
             </Link>
           </ul>
         </nav>
-        <Link to="/sign-up">
-          <span>Sign up</span>
-        </Link>
+        <div className="flex gap-2xsmall">
+          <Link to="/sign-up">
+            <span>Sign up</span>
+          </Link>
+          <Link to="/login">
+            <span>Login</span>
+          </Link>
+        </div>
       </div>
     </div>
   );
