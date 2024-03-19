@@ -7,10 +7,10 @@ const Navbar: React.FC = () => {
       <div className="flex justify-between max-w-four 2xl:max-w-five w-full ">
         <nav>
           <ul className="flex gap-2xsmall">
-            <Link to="/blogs">
+            <Link to="/">
               <li>Blogs</li>
             </Link>
-            <Link to="create-blog">
+            <Link to="/create-blog">
               <li>Create Blog</li>
             </Link>
             <Link to="/account">

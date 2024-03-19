@@ -17,7 +17,6 @@ const SignUpPage: React.FC<PageProps> = () => {
         <Label label="Username">
           <Input />
         </Label>
-
         {/* Email */}
         <Label label="Email">
           <Input />
