@@ -83,16 +83,21 @@ html {
   }
 }
 
+
+
 .blog h1 {
   font-size: 2.6181rem;
   line-height: 2.8799rem;
+  /* margin-bottom: 10px; */
 }
 .blog h2 {
   font-size: 1.6175rem;
   line-height: 2.0704rem;
+  margin-top: 10px;
 }
 .blog p,
 .blog span {
+  margin-top: 5px;
   font-size: 1.125rem;
   line-height: 1.5rem;
 }
