@@ -83,8 +83,6 @@ html {
   }
 }
 
-
-
 .blog h1 {
   font-size: 2.6181rem;
   line-height: 2.8799rem;
@@ -93,11 +91,39 @@ html {
 .blog h2 {
   font-size: 1.6175rem;
   line-height: 2.0704rem;
-  margin-top: 10px;
+  /* margin-top: 16px; */
 }
-.blog p,
-.blog span {
-  margin-top: 5px;
+.blog p {
+  /* margin-top: 8px; */
   font-size: 1.125rem;
   line-height: 1.5rem;
+}
+
+.blog span#subtitle {
+  color: rgb(63, 63, 63);
+  font-size: 1.125rem;
+  line-height: 1.5rem;
+}
+.blog span#author {
+  margin-top: 8px;
+  font-size: 14px;
+  line-height: 1.5rem;
+  color: rgb(26, 26, 26);
+}
+
+.blog span#date{
+  font-size: 12px;
+  font-weight: 600;
+  color: rgb(26, 26, 26);
+}
+
+.blog img {
+  /* margin-top: 16px; */
+}
+
+.dynamic-text {
+  width: 100%; /* Inherit width from the form */
+  overflow-wrap: break-word; /* Break words to prevent horizontal overflow */
+  word-wrap: break-word; /* Older browsers */
+  white-space: normal; /* Ensure text wraps */
 }

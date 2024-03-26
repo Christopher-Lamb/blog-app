@@ -8,21 +8,83 @@ interface DynamicTextProps {
   className?: string;
   isEditable?: boolean;
   content?: string | TrustedHTML;
+  placeholder?: string;
+  id?: string;
   onChange: (html: string) => void;
 }
 
-const DynamicText: React.FC<DynamicTextProps> = ({ primaryElement = "p", secondaryElement = "span", className, isEditable = true, onChange, content = "" }) => {
+const moveCursorEndOfNode = (node: Node) => {
+  const range = document.createRange();
+  range.setStart(node, 1);
+  range.setEnd(node, 1);
+  const selection = window.getSelection();
+  if (!selection) return;
+  // Get the current selection and remove any existing ranges
+  selection.removeAllRanges();
+  // Add the new range to the selection
+  selection.addRange(range);
+};
+
+const DynamicText: React.FC<DynamicTextProps> = ({ primaryElement = "p", secondaryElement = "span", className, isEditable = true, onChange, content = "", id, placeholder }) => {
   const contentEditableRef = useRef<HTMLDivElement>(null);
-  const handleChange = (event: React.ChangeEvent<HTMLDivElement>) => {
+  const [isPlaceholder, setIsPlaceholder] = useState(false);
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    // Asserting nativeEvent as InputEvent to access .data property
+    const inputChar = (event.nativeEvent as InputEvent).data;
+
+    // if (!placeholder)
     handleEmptyDiv();
     formatSpan();
+
+    // useEffect(() => {
+    //   console.log("IDK WHEN IT CHANGED")
+    // }, [isPlaceholder]);
+
+    if (inputChar) {
+      handlePlaceholder(inputChar);
+    } else {
+      handlePlaceholder("");
+    }
+
     const innerHTML = contentEditableRef.current?.innerHTML;
-    innerHTML && onChange(innerHTML);
+    if (innerHTML) {
+      onChange(innerHTML);
+    }
+  };
+
+  const handlePlaceholder = (inputChar: string) => {
+    const contentEditableDiv = contentEditableRef.current;
+    //
+    // Placeholder Logic
+    //
+    if (contentEditableDiv?.textContent === "" && placeholder && !isPlaceholder) {
+      setIsPlaceholder(true);
+      const newNode = document.createElement(primaryElement);
+      newNode.textContent = placeholder;
+      newNode.className="dynamic-placeholder"
+      newNode.style.color = "#595959";
+      newNode.style.opacity = ".7";
+
+      contentEditableDiv.removeChild(contentEditableDiv.childNodes[0]);
+      contentEditableDiv.appendChild(newNode);
+      moveCursorEndOfNode(newNode);
+    }
+    if (isPlaceholder) {
+      setIsPlaceholder(false);
+      const newNode = document.createElement(primaryElement);
+      newNode.textContent = inputChar;
+      if (contentEditableDiv && contentEditableDiv.childNodes.length === 1) {
+        contentEditableDiv.removeChild(contentEditableDiv.childNodes[0]);
+        contentEditableDiv.appendChild(newNode);
+        moveCursorEndOfNode(newNode);
+      }
+    }
   };
 
   useEffect(() => {
     formatElements();
     handleEmptyDiv();
+    handlePlaceholder("");
   }, []);
 
   useEffect(() => {
@@ -35,7 +97,6 @@ const DynamicText: React.FC<DynamicTextProps> = ({ primaryElement = "p", seconda
     if (parentNode?.textContent === "" && childNodes?.length === 0) {
       const newNode = document.createElement(primaryElement);
       newNode.appendChild(document.createElement("br"));
-      // newNode.style.fontSize = "25px";
       parentNode.appendChild(newNode);
     }
   };
@@ -49,8 +110,13 @@ const DynamicText: React.FC<DynamicTextProps> = ({ primaryElement = "p", seconda
       // Makes first element different than the rest
       if (i === 0) {
         const newNode = document.createElement(primaryElement);
+
+        //Add Id to the first / primary element
+        if (id) newNode.id = id;
+
         // newNode.style.fontSize = "25px";
         newNode.textContent = node.textContent;
+
         parentNode?.insertBefore(newNode, node);
         parentNode?.removeChild(node);
       }
@@ -58,14 +124,11 @@ const DynamicText: React.FC<DynamicTextProps> = ({ primaryElement = "p", seconda
       // And replace the muttled element with new one
       else if (node.textContent !== "") {
         const newNode = document.createElement(secondaryElement);
-        // newNode.style.fontSize = "18px";
         if (secondaryElement === "span") {
           newNode.style.display = "block";
         }
         if (i === 1) newNode.className = "first-el";
         newNode.textContent = node.textContent;
-        // parentNode?.insertBefore(newNode, node);
-        // parentNode?.removeChild(node);
         parentNode?.replaceChild(newNode, node);
       }
       // If element is empty add the empty add secondary El with <br/>
@@ -73,12 +136,9 @@ const DynamicText: React.FC<DynamicTextProps> = ({ primaryElement = "p", seconda
         const newNode = document.createElement(secondaryElement);
         newNode.appendChild(document.createElement("br"));
         if (i === 1) newNode.className = "first-el";
-        // newNode.style.fontSize = "18px";
         if (secondaryElement === "span") {
           newNode.style.display = "block";
         }
-        // parentNode?.insertBefore(newNode, node);
-        // parentNode?.removeChild(node);
         parentNode?.replaceChild(newNode, node);
       }
     });
@@ -87,7 +147,7 @@ const DynamicText: React.FC<DynamicTextProps> = ({ primaryElement = "p", seconda
   const formatSpan = () => {
     if (!contentEditableRef.current) return;
     const range = document.createRange();
-    const parentNode = contentEditableRef.current;
+    // const parentNode = contentEditableRef.current;
     const childNodes = contentEditableRef.current.childNodes.forEach((node, i) => {
       node.childNodes.forEach((childChildNode) => {
         const nodeName = childChildNode.nodeName;
@@ -117,12 +177,18 @@ const DynamicText: React.FC<DynamicTextProps> = ({ primaryElement = "p", seconda
     }
     if (e.key === "Backspace" || e.key === "Delete") {
       formatSpan();
+      handleEmptyDiv();
     }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === "Enter" && secondaryElement === "none") {
       e.preventDefault();
+    }
+    if (e.key === "Delete" || e.key === "Backspace") {
+      if (isPlaceholder) {
+        e.preventDefault();
+      }
     }
   };
 

@@ -8,3 +8,5 @@ export { default as AccoundHeader } from "./BlogBox/AccountHeader/AccountHeader"
 export { default as DynamicText } from "./DynamicText/DynamicText";
 export { default as ContentSelector } from "./ContentSelector/ContentSelector";
 export { default as ImgItem } from "./ImgItem/ImgItem";
+export { default as SaveButton } from "./SaveButton/SaveButton";
+export { default as PublishToggle } from "./PublishToggle/PublishToggle";

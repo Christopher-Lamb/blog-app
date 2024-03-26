@@ -1,13 +1,39 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useRef, useEffect } from "react";
+import { DynamicText } from "..";
 
-const ImgItem: React.FC<{ index: number }> = ({ index }) => {
-  const [imageSrc, setImageSrc] = useState<string | ArrayBuffer | null>(null);
+interface ImgItemProps {
+  index: number;
+  content: string;
+  handleChange?: (file: ArrayBuffer | string, text: string) => void;
+  src?: string | ArrayBuffer;
+}
+
+const hoveringStyles = {
+  outline: "1px solid var(--primary)",
+  borderRadius: "3px",
+};
+
+const ImgItem: React.FC<ImgItemProps> = ({
+  index,
+  handleChange = (file, text) => {
+    console.log({ file, text });
+  },
+  src,
+  content,
+}) => {
+  const [imageSrc, setImageSrc] = useState<string | ArrayBuffer | null>(src ? src : null);
+  const [imageWidth, setImageWidth] = useState(0);
+  const [imgDescription, setImgDescription] = useState(content);
+  const [isHovering, setIsHovering] = useState(false);
+  const [defaultDescription, setDefaultDescription] = useState(content);
+  const imgRef = useRef<HTMLImageElement>(null);
 
   const handleFileChange = useCallback((file: File) => {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
         setImageSrc(reader.result);
+        if (reader.result) handleChange(reader.result, imgDescription);
       };
       reader.readAsDataURL(file);
     }
@@ -19,6 +45,11 @@ const ImgItem: React.FC<{ index: number }> = ({ index }) => {
     const file = event.dataTransfer.files[0]; // Assuming single file drop
     handleFileChange(file);
   };
+
+  useEffect(() => {
+    if (!imgRef.current) return;
+    setImageWidth(imgRef.current.clientWidth);
+  }, [imageSrc]);
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files ? event.target.files[0] : null;
@@ -33,8 +64,29 @@ const ImgItem: React.FC<{ index: number }> = ({ index }) => {
     event.stopPropagation();
   };
 
+  const handleClear = () => {
+    setImageSrc("");
+    setDefaultDescription(imgDescription);
+  };
+
+  const handleHover = () => {
+    setIsHovering(true);
+  };
+  const handleLeave = () => {
+    setIsHovering(false);
+  };
+
   return (
-    <div onDrop={onDrop} onDragOver={onDragOver} onDragEnter={onDragOver} className="w-full max-h-[464.48px]">
+    <div onMouseEnter={handleHover} onMouseLeave={handleLeave} onDrop={onDrop} onDragOver={onDragOver} onDragEnter={onDragOver} className="w-fit">
+      {imageSrc && (
+        <div className="relative">
+          <div className="absolute right-0 h-10">
+            <button onClick={handleClear} aria-label="Clear Image" className="primary px-4 py-2">
+              Clear
+            </button>
+          </div>
+        </div>
+      )}
       <form className="w-full">
         <input type="file" onChange={onChange} style={{ display: "none" }} id={`fileInput-${index}`} />
         {!imageSrc && (
@@ -42,8 +94,38 @@ const ImgItem: React.FC<{ index: number }> = ({ index }) => {
             Drag and drop an image here, or click to select one.
           </label>
         )}
-        {imageSrc && <img className="max-h-[464.48px]" src={imageSrc as string} alt="Uploaded" style={{ marginTop: "20px" }} />}
+        {imageSrc && (
+          <div className="text-[14px] text-[#595959]">
+            <img ref={imgRef} className="max-h-[464.48px]" src={imageSrc as string} alt="Uploaded" />
+            <div
+              style={{
+                width: imageWidth ? `${imageWidth}px` : "100%",
+                ...(isHovering ? hoveringStyles : {}),
+              }}
+            >
+              <DynamicText
+              placeholder="Image Description..."
+                onChange={(content) => {
+                  handleChange(imageSrc, content);
+                  setImgDescription(content);
+                }}
+                content={defaultDescription}
+                className="mt-1 p-1 h-fit"
+                primaryElement="label"
+                secondaryElement="none"
+              />
+            </div>
+          </div>
+        )}
       </form>
+    </div>
+  );
+};
+
+const Options: React.FC = () => {
+  return (
+    <div className="absolute right-0 h-10">
+      <button className="primary px-4 py-2">Clear</button>
     </div>
   );
 };
