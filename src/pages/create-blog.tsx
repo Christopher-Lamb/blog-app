@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import type { HeadFC, PageProps } from "gatsby";
-import { Container, Navbar, DynamicText, Footer, ContentSelector, ImgItem, SaveButton, PublishToggle } from "../components";
+import { Authenticated, Navbar, DynamicText, Footer, ContentSelector, ImgItem, SaveButton, PublishToggle } from "../components";
 import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautiful-dnd";
 import { MdDragHandle } from "react-icons/md";
 import { FaTrash } from "react-icons/fa";
@@ -22,7 +22,7 @@ const placeholderMap: PlaceholderMap = {
   p: "Paragraph",
 };
 
-const IndexPage: React.FC<PageProps> = () => {
+const CreateBlogContent = (props: PageProps) => {
   const [blogItems, setBlogItems] = useState<Record<string, BlogItem>>({});
   const [blogItemIds, setBlogItemIds] = useState<string[]>([]);
 
@@ -205,6 +205,10 @@ const DragWrapper: React.FC<DragWrapperProps> = ({ id, index, children, type, on
   );
 };
 
-export default IndexPage;
+// Now, wrap ProfilePageContent with Authenticated and export this instead
+const CreateBlogPage = (props: PageProps) => {
+  return <Authenticated WrappedComponent={CreateBlogContent} {...props} />;
+};
 
+export default CreateBlogPage;
 export const Head: HeadFC = () => <title>Create Blog</title>;

@@ -1,8 +1,8 @@
 import * as React from "react";
 import type { HeadFC, PageProps } from "gatsby";
-import { Container, Navbar, AccoundHeader, BlogBox, Footer } from "../components";
+import { Authenticated, Container, Navbar, AccoundHeader, BlogBox, Footer } from "../components";
 
-const IndexPage: React.FC<PageProps> = () => {
+const AccountContents: React.FC<PageProps> = () => {
   return (
     <main>
       <Navbar />
@@ -17,6 +17,10 @@ const IndexPage: React.FC<PageProps> = () => {
   );
 };
 
-export default IndexPage;
+const AccountPage = (props: PageProps) => {
+  return <Authenticated WrappedComponent={AccountContents} {...props} />;
+};
+
+export default AccountPage;
 
 export const Head: HeadFC = () => <title>Home</title>;

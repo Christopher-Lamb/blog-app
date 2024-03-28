@@ -10,3 +10,4 @@ export { default as ContentSelector } from "./ContentSelector/ContentSelector";
 export { default as ImgItem } from "./ImgItem/ImgItem";
 export { default as SaveButton } from "./SaveButton/SaveButton";
 export { default as PublishToggle } from "./PublishToggle/PublishToggle";
+export { default as Authenticated } from "./Authenticated/Authenticated";
