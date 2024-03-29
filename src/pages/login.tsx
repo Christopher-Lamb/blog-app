@@ -2,8 +2,8 @@ import React from "react";
 import { Link, type HeadFC, type PageProps } from "gatsby";
 import { Navbar } from "../components";
 import { Form, Input, Label, Button } from "../components/Form";
-import { loginUser, getUsers } from "../utils/apiService";
-import { useUserContext } from "../context/UserContext";
+import { loginUser, getUser } from "../utils/userAPI";
+import { useAuthContext } from "../context/AuthContext";
 
 interface LoginProps {
   identifier: string;
@@ -15,11 +15,11 @@ function isLoginProps(obj: Partial<LoginProps>): obj is LoginProps {
 }
 
 const LoginPage: React.FC<PageProps> = () => {
-  const { checkAuthenticated, loginSuccess } = useUserContext();
+  const { checkAuthenticated, loginSuccess } = useAuthContext();
 
   const handleBtn = async () => {
     try {
-      const users = await getUsers();
+      const users = await getUser();
       console.log(users);
     } catch (error) {
       console.error(error);

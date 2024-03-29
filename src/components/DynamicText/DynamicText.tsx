@@ -11,6 +11,7 @@ interface DynamicTextProps {
   placeholder?: string;
   id?: string;
   onChange: (html: string) => void;
+  preventChars?: string;
 }
 
 const moveCursorEndOfNode = (node: Node) => {
@@ -25,7 +26,7 @@ const moveCursorEndOfNode = (node: Node) => {
   selection.addRange(range);
 };
 
-const DynamicText: React.FC<DynamicTextProps> = ({ primaryElement = "p", secondaryElement = "span", className, isEditable = true, onChange, content = "", id, placeholder }) => {
+const DynamicText: React.FC<DynamicTextProps> = ({ primaryElement = "p", secondaryElement = "span", className, isEditable = true, onChange, content = "", id, placeholder, preventChars }) => {
   const contentEditableRef = useRef<HTMLDivElement>(null);
   const [isPlaceholder, setIsPlaceholder] = useState(false);
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -61,7 +62,7 @@ const DynamicText: React.FC<DynamicTextProps> = ({ primaryElement = "p", seconda
       setIsPlaceholder(true);
       const newNode = document.createElement(primaryElement);
       newNode.textContent = placeholder;
-      newNode.className="dynamic-placeholder"
+      newNode.className = "dynamic-placeholder";
       newNode.style.color = "#595959";
       newNode.style.opacity = ".7";
 
@@ -189,6 +190,9 @@ const DynamicText: React.FC<DynamicTextProps> = ({ primaryElement = "p", seconda
       if (isPlaceholder) {
         e.preventDefault();
       }
+    }
+    if (preventChars && preventChars.includes(e.key)) {
+      e.preventDefault();
     }
   };
 

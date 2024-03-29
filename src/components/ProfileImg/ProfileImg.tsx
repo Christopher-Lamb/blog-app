@@ -1,39 +1,21 @@
 import React, { useState, useCallback, useRef, useEffect } from "react";
-import { DynamicText } from "..";
+import { MdModeEditOutline } from "react-icons/md";
 
 interface ImgItemProps {
-  index: number;
-  content: string;
-  handleChange?: (file: ArrayBuffer | string, text: string) => void;
+  handleChange?: (file: ArrayBuffer | string) => void;
   src?: string | ArrayBuffer;
 }
 
-const hoveringStyles = {
-  outline: "1px solid var(--primary)",
-  borderRadius: "3px",
-};
-
-const ImgItem: React.FC<ImgItemProps> = ({
-  index,
-  handleChange = (file, text) => {
-    console.log({ file, text });
-  },
-  src,
-  content,
-}) => {
+const ImgItem: React.FC<ImgItemProps> = ({ handleChange = () => {}, src }) => {
   const [imageSrc, setImageSrc] = useState<string | ArrayBuffer | null>(src ? src : null);
-  const [imageWidth, setImageWidth] = useState(0);
-  const [imgDescription, setImgDescription] = useState(content);
   const [isHovering, setIsHovering] = useState(false);
-  const [defaultDescription, setDefaultDescription] = useState(content);
   const imgRef = useRef<HTMLImageElement>(null);
-
   const handleFileChange = useCallback((file: File) => {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
         setImageSrc(reader.result);
-        if (reader.result) handleChange(reader.result, imgDescription);
+        if (reader.result) handleChange(reader.result);
       };
       reader.readAsDataURL(file);
     }
@@ -47,9 +29,10 @@ const ImgItem: React.FC<ImgItemProps> = ({
   };
 
   useEffect(() => {
-    if (!imgRef.current) return;
-    setImageWidth(imgRef.current.clientWidth);
-  }, [imageSrc]);
+    if (src) {
+      setImageSrc(src);
+    }
+  }, []);
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files ? event.target.files[0] : null;
@@ -66,7 +49,7 @@ const ImgItem: React.FC<ImgItemProps> = ({
 
   const handleClear = () => {
     setImageSrc("");
-    setDefaultDescription(imgDescription);
+    handleChange("");
   };
 
   const handleHover = () => {
@@ -80,41 +63,32 @@ const ImgItem: React.FC<ImgItemProps> = ({
     <div onMouseEnter={handleHover} onMouseLeave={handleLeave} onDrop={onDrop} onDragOver={onDragOver} onDragEnter={onDragOver} className="w-fit">
       {imageSrc && (
         <div className="relative">
-          <div className="absolute right-0 h-10">
+          <div className="absolute right-0 h-10 z-[1]">
             <button onClick={handleClear} aria-label="Clear Image" className="primary px-4 py-2">
               Clear
             </button>
           </div>
         </div>
       )}
-      <form className="w-full">
-        <input type="file" onChange={onChange} style={{ display: "none" }} id={`fileInput-${index}`} />
+      <form className="w-full w-two h-two overflow-hidden" style={{ borderRadius: "100%" }}>
+        <input type="file" onChange={onChange} style={{ display: "none" }} id={`fileInput`} />
         {!imageSrc && (
-          <label htmlFor={`fileInput-${index}`} className="border border-dashed cursor-pointer border-primary text-center w-full block p-small">
-            Drag and drop an image here, or click to select one.
+          <label htmlFor={`fileInput`} className="cursor-pointer bg-gray-300 outline-primary text-center w-full h-two flex items-center justify-center block p-small">
+            <div className=" p-2xsmall rounded-xl bg-gray-500 opacity-60">
+              <MdModeEditOutline className="text-large" />
+            </div>
           </label>
         )}
         {imageSrc && (
-          <div className="text-[14px] text-[#595959]">
+          <div className="relative text-[14px] text-[#595959] flex justify-center">
+            <label htmlFor={`fileInput`} className="absolute cursor-pointer outline-primary text-center w-full h-two flex items-center justify-center block p-small">
+              {isHovering && (
+                <div className=" p-2xsmall rounded-xl bg-gray-500 opacity-80">
+                  <MdModeEditOutline className="text-large text-white" />
+                </div>
+              )}
+            </label>
             <img ref={imgRef} className="max-h-[464.48px]" src={imageSrc as string} alt="Uploaded" />
-            <div
-              style={{
-                width: imageWidth ? `${imageWidth}px` : "100%",
-                ...(isHovering ? hoveringStyles : {}),
-              }}
-            >
-              <DynamicText
-                placeholder="Image Description..."
-                onChange={(content) => {
-                  handleChange(imageSrc, content);
-                  setImgDescription(content);
-                }}
-                content={defaultDescription}
-                className="mt-1 p-1 h-fit"
-                primaryElement="label"
-                secondaryElement="none"
-              />
-            </div>
           </div>
         )}
       </form>

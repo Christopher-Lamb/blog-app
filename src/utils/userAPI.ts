@@ -12,14 +12,15 @@ export const fetchData = async <T>(endpoint: string): Promise<T> => {
   }
 };
 
-interface SignupProps {
+interface User {
   name: string;
   username: string;
   email: string;
   password: string;
+  profileImg?: string;
 }
 
-export const signupUser = async <T>({ name, username, email, password }: SignupProps): Promise<T> => {
+export const signupUser = async <T>({ name, username, email, password }: User): Promise<T> => {
   try {
     // Pass the user data as the second argument to axios.post
     const response: AxiosResponse<T> = await axios.post(`${baseURL}/user/signup`, { name, username, email, password }, { withCredentials: true });
@@ -45,7 +46,7 @@ export const loginUser = async <T>({ identifier, password }: LoginProps): Promis
   }
 };
 
-export const getUsers = async <T>(): Promise<T> => {
+export const getUser = async <T>(): Promise<T> => {
   try {
     const response: AxiosResponse<T> = await axios.get(`${baseURL}/user`, { withCredentials: true });
     return response.data;
@@ -68,5 +69,16 @@ export const logoutUser = async <T>(): Promise<T> => {
     return response.data;
   } catch (error) {
     throw new Error("Error Logging Out");
+  }
+};
+
+// Updated function to accept a Partial<User> object for updating user details
+export const updateUser = async <T>(userDetails: Partial<User>): Promise<T> => {
+  try {
+    // Assuming the endpoint and HTTP method might be different for an update operation
+    const response: AxiosResponse<T> = await axios.patch(`${baseURL}/user`, userDetails, { withCredentials: true });
+    return response.data;
+  } catch (error) {
+    throw new Error("Error Updating User");
   }
 };

@@ -1,5 +1,5 @@
 import React, { ComponentType, useEffect, useRef } from "react";
-import { useUserContext } from "../../context/UserContext"; // Fixed import path
+import { useAuthContext } from "../../context/AuthContext"; // Fixed import path
 import { navigate, PageProps } from "gatsby";
 
 interface AuthenticatedProps extends PageProps {
@@ -7,7 +7,7 @@ interface AuthenticatedProps extends PageProps {
 }
 
 const Authenticated: React.FC<AuthenticatedProps> = ({ WrappedComponent, ...pageProps }) => {
-  const { isAuthenticated } = useUserContext();
+  const { isAuthenticated } = useAuthContext();
   const isInitialMount = useRef(true);
 
   useEffect(() => {

@@ -1,71 +1,100 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import Cookies from "js-cookie";
-import { hasTokenExpired, createToken, removeToken } from "../utils/tokenRefresh";
-import { refreshToken, logoutUser } from "../utils/apiService";
-import useInterval from "../hooks/useInterval";
+import { getUser, updateUser } from "../utils/userAPI";
+import { useAuthContext } from "./AuthContext";
+import { AxiosResponse } from "axios";
+
+interface User {
+  name: string;
+  email: string;
+  username: string;
+  profileImg: string;
+}
 
 interface UserContextProps {
-  checkAuthenticated: () => boolean;
-  isAuthenticated: boolean | null;
-  loginSuccess: () => void;
-  handleLogout: () => void;
+  userObj: User | null;
+  changeName: (text: string) => void;
+  changeImg: (file: string) => void;
 }
 
 const defaultContextValue: Partial<UserContextProps> = {
-  checkAuthenticated: undefined,
-  isAuthenticated: undefined,
-  loginSuccess: undefined,
-  handleLogout: undefined,
+  userObj: undefined,
+  changeName: undefined,
 };
 
 const UserContext = createContext(defaultContextValue);
 
 export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState<null | boolean>(null);
+  const [userObj, setUserObj] = useState<User>({ username: "", name: "", email: "", profileImg: "" });
+  const { isAuthenticated } = useAuthContext();
 
-  const loginSuccess = () => {
-    setIsAuthenticated(true);
-    createToken();
+  const handleUserData = async () => {
+    // Try to get userData from session storage
+    const userDataString = sessionStorage.getItem("userData");
+
+    // Initialize userData as a User type or null
+    let userData: User | null = userDataString ? JSON.parse(userDataString) : null;
+
+    // If userData doesn't exist, fetch it and update session storage
+    if (!userData) {
+      try {
+        // Assuming getUser() returns a User object or throws an error
+        const user: User = await getUser();
+        userData = user; // Update userData with the fetched user
+
+        // Corrected the typo in the key ("userDatta" -> "userData")
+        sessionStorage.setItem("userData", JSON.stringify(user));
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    if (userData) setUserObj(userData);
   };
 
-  useInterval(() => {
-    if (isAuthenticated) handleToken();
-  }, 120000);
-
-  const handleToken = async () => {
-    const { isExpired } = hasTokenExpired();
-    console.log({ isExpired });
-    if (isExpired) {
-      // Refresh token
-      // /refresh-token on a restricted route
-      // The is authenticated will be based on the response from the server
-      try {
-        await refreshToken();
-        createToken();
-        if (!isAuthenticated) setIsAuthenticated(true);
-      } catch (error) {
-        setIsAuthenticated(false);
-      }
-    } else if (isExpired === false) {
-      // If the token is not expired
-      setIsAuthenticated(true);
-    } else if (isExpired === null) {
-      //IF Null
-      setIsAuthenticated(false);
+  const changeName = async (text: string) => {
+    setUserObj((prevUserObj) => ({ ...prevUserObj, name: text }));
+    // Try to get userData from session storage
+    const newData = JSON.parse(JSON.stringify(userObj));
+    newData["name"] = text;
+    sessionStorage.setItem("userData", JSON.stringify(newData));
+    //Backend
+    try {
+      const response: AxiosResponse = await updateUser({ name: text });
+    } catch (error) {
+      throw error;
     }
   };
 
-  const handleLogout = () => {
-    removeToken();
-    logoutUser();
-    setIsAuthenticated(false);
+  const changeImg = async (file: string) => {
+    // upload image to cloundinary and return url link to the image
+    // Try to get userData from session storage
+    const newData = JSON.parse(JSON.stringify(userObj));
+    newData["profileImg"] = file;
+    setUserObj((prevUserObj) => ({ ...prevUserObj, profileImg: file }));
+    sessionStorage.setItem("userData", JSON.stringify(newData));
+
+    //Backend
+    try {
+      const response: AxiosResponse = await updateUser({ profileImg: file });
+    } catch (error) {
+      throw error;
+    }
   };
 
   useEffect(() => {
-    handleToken();
-  }, []);
+    console.log({ isAuthenticated });
+    if (isAuthenticated) {
+      handleUserData();
+    }
+    if (!isAuthenticated) {
+      sessionStorage.removeItem("userData");
+    }
+    //We are storing user Data in localstorage but we only handle actions based on the UID in the token
+    // on logout we are clearing the local storage
+  }, [isAuthenticated]);
 
-  return <UserContext.Provider value={{ handleLogout, loginSuccess, isAuthenticated }}>{children}</UserContext.Provider>;
+  // const getUser = () => {};
+
+  return <UserContext.Provider value={{ userObj, changeName, changeImg }}>{children}</UserContext.Provider>;
 };
 
 export const useUserContext = () => useContext(UserContext);

@@ -1,9 +1,10 @@
 import React from "react";
 import { Link } from "gatsby";
+import { useAuthContext } from "../../context/AuthContext";
 import { useUserContext } from "../../context/UserContext";
-
 const Navbar: React.FC = () => {
-  const { isAuthenticated, handleLogout } = useUserContext();
+  const { isAuthenticated, handleLogout } = useAuthContext();
+  const { userObj } = useUserContext();
 
   const handleLogoutBtn = () => {
     if (handleLogout) handleLogout();
@@ -36,9 +37,12 @@ const Navbar: React.FC = () => {
               </Link>
             </>
           ) : (
-            <button aria-label="Logout" onClick={handleLogoutBtn}>
-              Logout
-            </button>
+            <>
+              <span>{userObj?.username}</span>
+              <button aria-label="Logout" onClick={handleLogoutBtn}>
+                Logout
+              </button>
+            </>
           )}
         </div>
       </div>

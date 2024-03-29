@@ -1,12 +1,13 @@
 import "./src/styles/global.css";
 import React from "react";
 
+import { AuthProvider } from "./src/context/AuthContext";
 import { UserProvider } from "./src/context/UserContext";
 
 export const wrapRootElement = ({ element }) => {
   return (
-    <UserProvider>
-      {element}
-    </UserProvider>
+    <AuthProvider>
+      <UserProvider>{element}</UserProvider>
+    </AuthProvider>
   );
 };

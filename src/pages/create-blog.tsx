@@ -40,7 +40,7 @@ const CreateBlogContent = (props: PageProps) => {
         id: "item-4",
         type: "img",
         content: "This is an image of some shit coffee",
-        src: "https://res.cloudinary.com/dur3duyjo/image/upload/v1711109877/DALL_E_2024-03-16_19.05.47_-_Create_a_cartoon_image_of_a_confident_young_woman_sitting_on_a_beach._She_has_medium-dark_skin_is_wearing_a_bright_green_bikini_top_and_brown_bikini_ifiudk.webp",
+        src: "https://res.cloudinary.com/dur3duyjo/image/upload/v1711109877/Blog_Site/DALL_E_2024-03-16_19.05.47_-_Create_a_cartoon_image_of_a_confident_young_woman_sitting_on_a_beach._She_has_medium-dark_skin_is_wearing_a_bright_green_bikini_top_and_brown_bikini_ifiudk.webp",
       },
     };
 
