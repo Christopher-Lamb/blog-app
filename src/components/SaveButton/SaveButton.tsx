@@ -8,12 +8,12 @@ const SaveButton: React.FC<SaveButtonProps> = (props) => {
   //Carry out auto save feature with useInterval
   const { onSave, className, ...otherProps } = props;
 
-  const resetInterval = useInterval(() => {
-    onSave();
-  }, 30000);
+  // const resetInterval = useInterval(() => {
+  //   onSave();
+  // }, 30000);
 
   const handleSave = () => {
-    resetInterval();
+    // resetInterval();
     onSave();
   };
   return (

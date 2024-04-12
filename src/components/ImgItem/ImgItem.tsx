@@ -3,7 +3,7 @@ import { DynamicText } from "..";
 
 interface ImgItemProps {
   index: number;
-  content: string;
+  content?: string;
   handleChange?: (file: ArrayBuffer | string, text: string) => void;
   src?: string | ArrayBuffer;
 }
@@ -13,17 +13,10 @@ const hoveringStyles = {
   borderRadius: "3px",
 };
 
-const ImgItem: React.FC<ImgItemProps> = ({
-  index,
-  handleChange = (file, text) => {
-    console.log({ file, text });
-  },
-  src,
-  content,
-}) => {
+const ImgItem: React.FC<ImgItemProps> = ({ index, handleChange = () => {}, src, content }) => {
   const [imageSrc, setImageSrc] = useState<string | ArrayBuffer | null>(src ? src : null);
   const [imageWidth, setImageWidth] = useState(0);
-  const [imgDescription, setImgDescription] = useState(content);
+  const [imgDescription, setImgDescription] = useState(content || "");
   const [isHovering, setIsHovering] = useState(false);
   const [defaultDescription, setDefaultDescription] = useState(content);
   const imgRef = useRef<HTMLImageElement>(null);
@@ -66,6 +59,7 @@ const ImgItem: React.FC<ImgItemProps> = ({
 
   const handleClear = () => {
     setImageSrc("");
+    handleChange("", imgDescription);
     setDefaultDescription(imgDescription);
   };
 

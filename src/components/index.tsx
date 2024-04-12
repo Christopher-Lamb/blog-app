@@ -12,4 +12,4 @@ export { default as SaveButton } from "./SaveButton/SaveButton";
 export { default as PublishToggle } from "./PublishToggle/PublishToggle";
 export { default as Authenticated } from "./Authenticated/Authenticated";
 export { default as ProfileImg } from "./ProfileImg/ProfileImg";
-
+export { default as Thumbnail } from "./Thumbnail/Thumbnail";

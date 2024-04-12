@@ -31,7 +31,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useInterval(() => {
     if (isAuthenticated) handleToken();
-  }, 120000);
+  }, 2700000);
 
   const handleToken = async () => {
     const { isExpired } = hasTokenExpired();
