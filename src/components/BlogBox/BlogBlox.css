@@ -10,9 +10,11 @@
 }
 
 .blog-container {
+  position: relative;
   perspective: 120rem; /* Adjust this value as needed */
   /* Ensures the container can hold the hover effect */
   overflow: visible;
+  z-index: 999;
 }
 
 .blog-box {

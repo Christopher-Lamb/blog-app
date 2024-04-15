@@ -35,7 +35,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const handleToken = async () => {
     const { isExpired } = hasTokenExpired();
-    console.log({ isExpired });
     if (isExpired) {
       // Refresh token
       // /refresh-token on a restricted route

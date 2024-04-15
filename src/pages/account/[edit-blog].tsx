@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState, ChangeEvent, TextareaHTMLAttributes } from "react";
 import type { HeadFC, PageProps } from "gatsby";
-import { Authenticated, Navbar, DynamicText, Footer, ContentSelector, ImgItem, SaveButton, Thumbnail, BlogBox } from "../../components";
+import { Authenticated, Navbar, DynamicText, Footer, ContentSelector, ImgItem, SaveButton, Thumbnail, BlogBox, SingleAccordion } from "../../components";
 import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautiful-dnd";
 import { MdDragHandle } from "react-icons/md";
 import { FaTrash } from "react-icons/fa";
 import { generateUID, moveItemDND } from "../../utils";
-import { getBlogBySlug, updateBlogBySlug, updateSlugBySlug } from "../../utils/blogAPI";
+import { getDraftBySlug, updateDraftBySlug, updateSlugBySlug } from "../../utils/blogAPI";
 import { useUserContext } from "../../context/UserContext";
 
 interface BlogItem {
@@ -44,18 +44,18 @@ const CreateBlogContent = (props: PageProps) => {
   // INIT
   useEffect(() => {
     const initBlog = async () => {
-      const { body }: { body: BlogItem[] } = await getBlogBySlug(slug);
-
+      const { draft }: { draft: BlogItem[] } = await getDraftBySlug(slug);
+      console.log({ draft });
       // Get the position of the body items where they have a position and then order the position and return only the ids
-      const ids = body
-        .filter((bodyItem): bodyItem is BlogItem & { position: number } => bodyItem.position !== undefined)
+      const ids = draft
+        .filter((draftItem): draftItem is BlogItem & { position: number } => draftItem.position !== undefined)
         .sort((a, b) => a.position - b.position)
         .map((item) => item._id);
 
       setBlogItemIds(ids);
 
       let mappedBlogItems: Record<string, BlogItem> = {};
-      body.forEach((item) => {
+      draft.forEach((item) => {
         if (["title", "subtitle", "description", "thumbnail"].includes(item.type)) {
           mappedBlogItems[item.type] = item;
         } else {
@@ -108,7 +108,8 @@ const CreateBlogContent = (props: PageProps) => {
   };
 
   const handleImgChange = (id: string, file: string | ArrayBuffer, text?: string) => {
-    let imageObj = text ? { src: file, content: "" } : { src: file, content: text };
+    let imageObj = text ? { src: file, content: text } : { src: file, content: "" };
+
     setBlogItems((prevItems) => ({ ...prevItems, [id]: { ...prevItems[id], ...imageObj } }));
   };
 
@@ -125,19 +126,20 @@ const CreateBlogContent = (props: PageProps) => {
     });
 
     //Remove the id from the store as to not cause conflict with mongoose
-    const blogItemsArray = Object.keys(workingStore)
-      .map((key) => {
-        const { _id, ...rest } = workingStore[key];
-        if (_id.split("-")[0] === "blogitem") {
-          return rest;
-        } else {
-          return workingStore[key];
-        }
-      })
-      .filter((obj) => (obj.type !== "image" && obj.content !== "") || (["image", "thumbnail"].includes(obj.type) && obj.src !== ""));
+    const blogItemsArray = Object.keys(workingStore).map((key) => {
+      const { _id, ...rest } = workingStore[key];
+      if (_id.split("-")[0] === "blogitem") {
+        return rest;
+      } else {
+        return workingStore[key];
+      }
+    });
+    //                                                  false                                             false                      delete
+    // .filter((obj) => obj.type !== "img" && obj.content !== "");
 
+    //arr.filter((item)=> item.type !== 1) this will remove all items that equall one because it filters out every false
     //Send the objects to the backend
-    const imgsUploaded: { position: number; src: string; type: string }[] = await updateBlogBySlug(slug, blogItemsArray);
+    const imgsUploaded: { position: number; src: string; type: string }[] = await updateDraftBySlug(slug, blogItemsArray);
     // AXIOS is returning the positions we hav uploaded images along with the new url associated with that image
     imgsUploaded.forEach((imgObj) => {
       //get id at index then update the src with the new url at the targetId
@@ -145,20 +147,15 @@ const CreateBlogContent = (props: PageProps) => {
         const targetId = blogItemIds[imgObj.position];
         setBlogItems((prevItems) => ({ ...prevItems, [targetId]: { ...prevItems[targetId], src: imgObj.src } }));
       } else if (imgObj.type === "thumbnail") {
-        console.log(imgObj);
         setBlogItems((prevItems) => ({ ...prevItems, thumbnail: { ...prevItems["thumbnail"], src: imgObj.src } }));
       }
     });
 
     // Handle if slug has changed
     if (slug !== slugState) {
-      console.log("Slug has changed");
       const newSlug = await updateSlugBySlug(slug, slugState);
-      console.log(newSlug);
       window.location.replace("/account/" + newSlug);
     }
-
-    console.log({ blogItemIds, blogItems, initalObjRef });
   };
 
   const handleSlugChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -166,6 +163,8 @@ const CreateBlogContent = (props: PageProps) => {
     // Get rid of spaces and special characters
     string = string.replace(/(\s+)|(-+)/g, "-");
     string = string.replace(/[^a-zA-Z0-9-]/g, "");
+    string = string.replace(/(\s+)|(-+)/g, "-");
+    string = string.replace(/^[-]+|[-]+$/g, "");
     string = string.slice(0, 70).toLowerCase();
     setSlugState(string);
   };
@@ -182,7 +181,7 @@ const CreateBlogContent = (props: PageProps) => {
   return (
     <main>
       <Navbar />
-      <div className="h-10 bg-orange-400">hello</div>
+      <div>hello brother</div>
       {true && (
         <DragDropContext onDragEnd={handleDragEnd}>
           <div className="flex justify-end mx-auto max-w-five">
@@ -190,39 +189,40 @@ const CreateBlogContent = (props: PageProps) => {
               <SaveButton onSave={handleSave} />
             </div>
           </div>
-          <div className="flex flex-col items-start blog mt-med container mx-auto px-4 md:px-0 xl:max-w-five min-h-[80vh]">
-            {/*  */}
+          <div className="flex flex-col items-start blog mt-med container mx-auto px-4 md:px-0 max-w-four min-h-[80vh]">
             {blogItems["title"] && (
               <>
                 {/* SLUG AND DESCRIPTION */}
-                <div className="grid w-full max-w-four p-4 bg-gray-50 shadow mb-small">
-                  <div className="grid">
-                    <label className="text-med w-fit" style={{ borderBottom: "2px solid rgba(0,0,0,.2)" }}>
-                      Slug or Url Path
-                    </label>
-                    <input className="p-3xsmall w-full text-small18" onChange={handleSlugChange} defaultValue={slugState}></input>
-                    <span className="p-3xsmall">slug preview: /{slugState}/</span>
+                <SingleAccordion title="Url, Description, and Thumbnail">
+                  <div className="grid w-full gap-3xsmall max-w-four p-4">
+                    <div className="grid">
+                      <label className="text-med w-fit" style={{ borderBottom: "2px solid rgba(0,0,0,.2)" }}>
+                        Slug or Url Path
+                      </label>
+                      <input className="p-3xsmall w-full text-small18 border" onChange={handleSlugChange} defaultValue={slugState}></input>
+                      <span className="p-3xsmall">slug preview: /{slugState}/</span>
+                    </div>
+                    <div className="grid">
+                      <label className="text-med w-fit" style={{ borderBottom: "2px solid rgba(0,0,0,.2)" }}>
+                        Brief Description
+                      </label>
+                      <textarea
+                        maxLength={300}
+                        onChange={(e) => handleTextChange("description", e.target.value)}
+                        className="h-[100px] resize-none w-full p-3xsmall border"
+                        defaultValue={initalObjRef.current["description"].content}
+                      />
+                    </div>
+                    <div className="max-w-three w-full">
+                      <label className="text-med">Thumbnail:</label>
+                      <Thumbnail handleChange={(file) => handleImgChange("thumbnail", file)} src={blogItems["thumbnail"].src} />
+                    </div>
                   </div>
-                  <div className="grid">
-                    <label className="text-med w-fit" style={{ borderBottom: "2px solid rgba(0,0,0,.2)" }}>
-                      Brief Description
-                    </label>
-                    <textarea
-                      maxLength={250}
-                      onChange={(e) => handleTextChange("description", e.target.value)}
-                      className="max-h-large resize-none w-full"
-                      defaultValue={initalObjRef.current["description"].content}
-                    />
-                  </div>
-                </div>
-                <div className="max-w-three w-full">
-                  <label className="text-med">Thumbnail:</label>
-                  <Thumbnail handleChange={(file) => handleImgChange("thumbnail", file)} src={blogItems["thumbnail"].src} />
-                </div>
+                </SingleAccordion>
                 {/* <BlogBox /> */}
                 {/* TITLE AND SUBTITLE */}
                 <DynamicText
-                  className="w-full"
+                  className="w-full "
                   placeholder="Headline"
                   primaryElement={"h1"}
                   secondaryElement={"none"}
@@ -286,32 +286,33 @@ interface DragWrapperProps {
   children?: React.ReactNode;
   type?: string;
   onDelete: (delId: string) => void;
+  className?: string;
 }
 
-const DragWrapper: React.FC<DragWrapperProps> = ({ id, index, children, type, onDelete }) => {
+const DragWrapper: React.FC<DragWrapperProps> = ({ id, index, children, type, onDelete, className }) => {
   let marginTop = "0";
   switch (type) {
-    case "img":
-      marginTop = "mt-4";
+    case "image":
+      marginTop = "my-4";
       break;
-    case "h2":
-      marginTop = "mt-2.5";
+    case "subheading":
+      marginTop = "mb-[0.125rem] mt-2";
       break;
-    case "p":
-      marginTop = "mt-1";
+    case "paragraph":
+      marginTop = "mb-2";
       break;
   }
 
   return (
     <Draggable draggableId={id} index={index}>
       {(provided) => (
-        <div ref={provided.innerRef} {...provided.draggableProps} className={"flex gap-2 " + marginTop}>
+        <div ref={provided.innerRef} {...provided.draggableProps} className={"flex gap-2s " + marginTop}>
           {/* <div className="relative h-auto flex justify-center"></div> */}
           {children}
-          <div className="relative primary h-8 w-8 flex rounded" {...provided.dragHandleProps}>
+          <div className="relative primary h-8 w-8 shrink-0 rounded" {...provided.dragHandleProps}>
             <MdDragHandle size={"2rem"} />
           </div>
-          <button onClick={() => onDelete(id)} className="relative accent h-8 w-8 flex items-center justify-center rounded">
+          <button onClick={() => onDelete(id)} className="relative shrink-0 accent h-8 w-8 flex items-center justify-center rounded">
             <FaTrash size={"1rem"} />
           </button>
         </div>

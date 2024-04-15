@@ -9,14 +9,9 @@ const IndexPage: React.FC<PageProps> = () => {
       <Container className="gap-med mt-med container mx-auto px-4 md:px-0 xl:max-w-five">
         <SiteBanner />
         <SearchBar />
-        <Container className="gap-xsmall">
-          <BlogBox />
-          <BlogBox />
-          <BlogBox />
-          <BlogBox />
-        </Container>
+        <Container className="gap-xsmall"></Container>
       </Container>
-        <Footer className="mt-large" />
+      {/* <Footer className="mt-large" /> */}
     </main>
   );
 };

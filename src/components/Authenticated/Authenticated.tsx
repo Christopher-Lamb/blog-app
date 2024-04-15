@@ -11,7 +11,6 @@ const Authenticated: React.FC<AuthenticatedProps> = ({ WrappedComponent, ...page
   const isInitialMount = useRef(true);
 
   useEffect(() => {
-    console.log({ isAuthenticated });
     // Skip the effect on initial mount
     if (isAuthenticated === false) {
       // Navigate to login, ensure you're using the correct route

@@ -5,7 +5,7 @@ const baseURL = "http://localhost:8001";
 interface Blog {
   title: string;
   slug: string;
-  body?: [];
+  draft?: [];
 }
 
 interface BlogItem {
@@ -35,9 +35,10 @@ export const initAuthorsBlogs = async <T>(): Promise<T> => {
   }
 };
 
-export const getBlogBySlug = async <T>(slug: string): Promise<T> => {
+export const getDraftBySlug = async <T>(slug: string): Promise<T> => {
   try {
-    const response: AxiosResponse<T> = await axios.post(`${baseURL}/blog/blogBySlug`, { slug }, { withCredentials: true });
+    const response: AxiosResponse<T> = await axios.post(`${baseURL}/blog/draftBySlug`, { slug }, { withCredentials: true });
+    console.log({ response });
     return response.data;
   } catch (err) {
     throw new Error("Couldnt Get Authors Blogs");
@@ -53,9 +54,9 @@ export const deleteAllUserBlogs = async <T>(): Promise<T> => {
   }
 };
 
-export const updateBlogBySlug = async <T>(slug: string, body: BlogItem[]): Promise<T> => {
+export const updateDraftBySlug = async <T>(slug: string, draft: BlogItem[]): Promise<T> => {
   try {
-    const response: AxiosResponse<T> = await axios.patch(`${baseURL}/blog/blogBySlug`, { slug, body }, { withCredentials: true });
+    const response: AxiosResponse<T> = await axios.patch(`${baseURL}/blog/draftBySlug`, { slug, draft }, { withCredentials: true });
     return response.data;
   } catch (error) {
     throw new Error("Oopsie Blog Didnt update something went wrong >:(");
@@ -68,5 +69,44 @@ export const updateSlugBySlug = async <T>(oldSlug: string, newSlug: string): Pro
     return response.data;
   } catch (error) {
     throw new Error("Oopsie Slug Didnt update something went wrong >:(");
+  }
+};
+
+export const publishBlog = async <T>(slug: string): Promise<T> => {
+  try {
+    const response: AxiosResponse<T> = await axios.post(`${baseURL}/blog/publish-blog`, { slug }, { withCredentials: true });
+    return response.data;
+  } catch (error) {
+    console.log({ error });
+    throw new Error("Couldnt get blog post...XD");
+  }
+};
+
+export const getPublishedBlogsByAuthor = async <T>(): Promise<T> => {
+  try {
+    const response: AxiosResponse<T> = await axios.post(`${baseURL}/blog/published-by-author`, {}, { withCredentials: true });
+    return response.data;
+  } catch (error) {
+    console.log({ error });
+    throw new Error("Couldnt get blog post...XD");
+  }
+};
+
+export const deleteBlog = async <T>(slug: string): Promise<T> => {
+  try {
+    const response: AxiosResponse<T> = await axios.post(`${baseURL}/blog/deleteBySlug`, { slug }, { withCredentials: true });
+    return response.data;
+  } catch (error) {
+    console.log({ error });
+    throw new Error("Couldnt get blog post...XD");
+  }
+};
+export const unpublishBlog = async <T>(slug: string): Promise<T> => {
+  try {
+    const response: AxiosResponse<T> = await axios.post(`${baseURL}/blog/unpublish-blog`, { slug }, { withCredentials: true });
+    return response.data;
+  } catch (error) {
+    console.log({ error });
+    throw new Error("Couldnt get blog post...XD");
   }
 };

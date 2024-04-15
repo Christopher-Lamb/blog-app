@@ -70,7 +70,7 @@ const Thumbnail: React.FC<ThumbnailProps> = ({ handleChange = () => {}, src }) =
           </div>
         </div>
       )}
-      <form className="w-full relative max-w-three h-two overflow-hiddens">
+      <form className="w-full relative max-w-three h-two">
         <input type="file" onChange={onChange} style={{ display: "none" }} id={`fileInput`} />
         {!imageSrc && (
           <label htmlFor={`fileInput`} className="cursor-pointer bg-gray-300 outline-primary text-center h-two flex items-center justify-center block p-small">
@@ -80,7 +80,7 @@ const Thumbnail: React.FC<ThumbnailProps> = ({ handleChange = () => {}, src }) =
           </label>
         )}
         {imageSrc && (
-          <div className="relative text-[14px] max-h-two text-[#595959] flex items-center justify-center">
+          <div className="relative text-[14px] h-full max-h-two text-[#595959]">
             <label htmlFor={`fileInput`} className="absolute cursor-pointer outline-primary text-center w-full h-two flex items-center justify-center block p-small">
               {isHovering && (
                 <div className=" p-2xsmall rounded-xl bg-gray-500 opacity-80">
@@ -88,8 +88,10 @@ const Thumbnail: React.FC<ThumbnailProps> = ({ handleChange = () => {}, src }) =
                 </div>
               )}
             </label>
-            <div className="w-full flex justify-center max-h-two overflow-hidden">
-              <img ref={imgRef} className="max-w-three max-h-two bg-contain" src={imageSrc as string} alt="Uploaded" />
+            <div className="w-full relative h-full max-h-two overflow-hidden">
+              <div className="relative min-h-full w-full">
+                <img ref={imgRef} src={imageSrc as string} alt="Blog Thumbnail" className="absolute inset-0 h-full min-w-full mx-auto object-cover" />
+              </div>
             </div>
           </div>
         )}

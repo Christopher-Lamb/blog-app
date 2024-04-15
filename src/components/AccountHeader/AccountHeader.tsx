@@ -8,7 +8,6 @@ const AccountHeader: React.FC = () => {
   const [profilePic, setProfilePic] = useState("");
 
   const { userObj, changeName, changeImg } = useUserContext();
-  console.log(userObj?.profileImg);
 
   const handleOnNameChange = (html: string) => {
     let workingStr = html.replaceAll(/(\<span\>)|(\<\/span\>)|(\<br\/\>)|(\<br\>)/g, "");

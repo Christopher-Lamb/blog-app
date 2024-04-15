@@ -71,10 +71,10 @@ const ImgItem: React.FC<ImgItemProps> = ({ index, handleChange = () => {}, src, 
   };
 
   return (
-    <div onMouseEnter={handleHover} onMouseLeave={handleLeave} onDrop={onDrop} onDragOver={onDragOver} onDragEnter={onDragOver} className="w-fit">
+    <div onMouseEnter={handleHover} onMouseLeave={handleLeave} onDrop={onDrop} onDragOver={onDragOver} onDragEnter={onDragOver} className="w-full">
       {imageSrc && (
         <div className="relative">
-          <div className="absolute right-0 h-10">
+          <div className="absolute z-[2] right-0 h-10">
             <button onClick={handleClear} aria-label="Clear Image" className="primary px-4 py-2">
               Clear
             </button>
@@ -89,8 +89,10 @@ const ImgItem: React.FC<ImgItemProps> = ({ index, handleChange = () => {}, src, 
           </label>
         )}
         {imageSrc && (
-          <div className="text-[14px] text-[#595959]">
-            <img ref={imgRef} className="max-h-[464.48px]" src={imageSrc as string} alt="Uploaded" />
+          <div className="text-[14px] w-full text-[#595959]">
+            <div className="relative min-h-full w-full">
+              <img ref={imgRef} className="max-h-[464.48px]s inset-0 h-full min-w-full mx-auto object-cover" src={imageSrc as string} alt="Uploaded" />
+            </div>
             <div
               style={{
                 width: imageWidth ? `${imageWidth}px` : "100%",
