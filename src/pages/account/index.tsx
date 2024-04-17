@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import type { HeadFC, PageProps } from "gatsby";
-import { Authenticated, Container, Navbar, AccountHeader, BlogBox, BlogSwitch, Footer, EditingWrapper, PublishedWrapper } from "../../components";
+import { Authenticated, Container, SearchBar, Navbar, AccountHeader, BlogBox, BlogSwitch, Footer, EditingWrapper, PublishedWrapper, SortBox } from "../../components";
 import { createBlog, initAuthorsBlogs, deleteAllUserBlogs, publishBlog, getPublishedBlogsByAuthor, deleteBlog, unpublishBlog } from "../../utils/blogAPI";
 import { useUserContext } from "../../context/UserContext";
+import { localSearchBlogs } from "../../utils/searchFunctions";
 
 interface BlogPreview {
   title: string;
@@ -14,21 +15,33 @@ interface BlogBoxProps {
   author: string;
   slug: string;
   blogPreview: BlogPreview;
-  published?: boolean;
-  firstPublishedDate?: string;
-  lastUpdatedDate?: string;
+  isPublished?: boolean;
+  firstPublishedDate?: string | number | Date;
+  lastUpdatedDate?: string | number | Date;
+  createdAt?: string | number | Date;
+  updatedAt?: string | number | Date;
 }
+function sortArrayByDate(arr: BlogBoxProps[], attribute: "createdAt" | "updatedAt" | "firstPublishedDate" | "lastUpdatedDate"): BlogBoxProps[] {
+  return arr.sort((a, b) => {
+    // Handle potential undefined dates by providing a default that sorts them last
+    const dateA = new Date(a[attribute] || 0); // Converts undefined to Unix Epoch (very old date)
+    const dateB = new Date(b[attribute] || 0); // Same as above
 
+    return dateB.getTime() - dateA.getTime(); // Compare timestamps
+  });
+}
 const AccountContents: React.FC<PageProps> = () => {
   const [isEditing, setIsEditing] = useState(true);
   const [draftBlogs, setDraftBlogs] = useState<BlogBoxProps[]>([]);
   const [publishedBlogs, setPublishedBlogs] = useState<BlogBoxProps[]>([]);
+  const [draftSortType, setDraftSortType] = useState("lastUpdated");
+  const [publishedSortType, setPublishedSortType] = useState("lastPublished");
   const { userObj } = useUserContext();
 
   const handleCreateBlog = async () => {
     const data: BlogBoxProps = await createBlog();
 
-    setDraftBlogs((prevState: any) => [...prevState, { author: userObj?.username, slug: data.slug, blogPreview: data.blogPreview }]);
+    setDraftBlogs((prevState: any) => [{ author: userObj?.username, slug: data.slug, blogPreview: data.blogPreview }, ...prevState]);
   };
   const handleDeleteAll = async () => {
     // await deleteAllUserBlogs();
@@ -40,10 +53,14 @@ const AccountContents: React.FC<PageProps> = () => {
       try {
         // Handle Draft Blogs
         const blogs: BlogBoxProps[] = await initAuthorsBlogs();
-        setDraftBlogs(blogs);
+        let draft = sortArrayByDate(blogs, "updatedAt");
+        setDraftBlogs(draft);
+
         const pubBlogs: BlogBoxProps[] = await getPublishedBlogsByAuthor();
-        setPublishedBlogs(pubBlogs);
-        console.log({ blogs, pubBlogs });
+        let published = sortArrayByDate(pubBlogs, "lastUpdatedDate");
+        setPublishedBlogs(published);
+
+        // console.log({ blogs, pubBlogs });
       } catch (err) {}
     };
     initBlogs();
@@ -57,15 +74,17 @@ const AccountContents: React.FC<PageProps> = () => {
 
   const handlePublishBlog = async (slug: string) => {
     try {
+      //This is dumb we are watting for it to respond getting a response and not using it XD
       const res = await publishBlog(slug);
-      console.log({ res });
-      console.log({ slug, draftBlogs, publishedBlogs });
+      // console.log({ res });
+      // console.log({ slug, draftBlogs, publishedBlogs });
       const isAlreadyPublished = publishedBlogs.some((blog: BlogBoxProps) => blog.slug === slug);
 
       if (!isAlreadyPublished) {
         const newlyPublishedBlog: any = draftBlogs.find((blog: BlogBoxProps) => blog.slug === slug);
         if (newlyPublishedBlog) {
-          newlyPublishedBlog["published"] = true;
+          newlyPublishedBlog["isPublished"] = true;
+
           const newDraftBlogs = draftBlogs.map((blog: BlogBoxProps) => {
             if (blog.slug === slug) {
               return newlyPublishedBlog;
@@ -75,8 +94,16 @@ const AccountContents: React.FC<PageProps> = () => {
           });
 
           setDraftBlogs(newDraftBlogs);
-          setPublishedBlogs((prev: any) => [...prev, newlyPublishedBlog]);
-          console.log({ newlyPublishedBlog, publishedBlogs, draftBlogs });
+          setPublishedBlogs((prev: any) => [newlyPublishedBlog, ...prev]);
+        } else {
+          const newPublishedBlogs = publishedBlogs.map((pubBlog) => {
+            if (pubBlog.slug === slug) {
+              return { ...pubBlog, lastUpdatedDate: Date.now() };
+            } else {
+              return pubBlog;
+            }
+          });
+          // setPublishedBlogs(newPublishedBlogs);
         }
       }
     } catch (err) {}
@@ -86,7 +113,7 @@ const AccountContents: React.FC<PageProps> = () => {
     const newPublishedBlogs = publishedBlogs.filter((blog) => blog.slug !== slug);
     const newDraftBlogs = draftBlogs.map((blog) => {
       if (blog.slug === slug) {
-        return { ...blog, published: false };
+        return { ...blog, isPublished: false };
       } else {
         return blog;
       }
@@ -97,12 +124,55 @@ const AccountContents: React.FC<PageProps> = () => {
   };
 
   const handleDeleteBlog = async (slug: string) => {
-    console.log({ draftBlogs });
     const newDraftBlogs = draftBlogs.filter((blog) => blog.slug !== slug);
     const newPublishedBlogs = publishedBlogs.filter((blog) => blog.slug !== slug);
     setDraftBlogs(newDraftBlogs);
     setPublishedBlogs(newPublishedBlogs);
     const res = await deleteBlog(slug);
+  };
+
+  const handleDraftSort = (sortType: string) => {
+    let arr: any = [];
+    setDraftSortType(sortType);
+    if (sortType === "lastUpdated") {
+      arr = sortArrayByDate(draftBlogs, "updatedAt");
+    } else {
+      arr = sortArrayByDate(draftBlogs, "createdAt");
+    }
+    setDraftBlogs(() => [...arr]);
+  };
+
+  const handlePublishSort = (sortType: string) => {
+    let arr: any = [];
+    console.log({ sortType });
+    setPublishedSortType(sortType);
+    if (sortType === "lastPublished") {
+      arr = sortArrayByDate(publishedBlogs, "lastUpdatedDate");
+    } else {
+      arr = sortArrayByDate(publishedBlogs, "firstPublishedDate");
+    }
+    console.log(arr);
+    setPublishedBlogs(() => [...arr]);
+  };
+
+  const handleDraftSearch = (searchQuery: string) => {
+    //If we are not sorting by search resort by sortbox
+    if (searchQuery === "") {
+      handleDraftSort(draftSortType);
+    } else {
+      const newDrafts = localSearchBlogs(draftBlogs, searchQuery);
+      setDraftBlogs(() => [...newDrafts]);
+    }
+  };
+
+  const handlePublishSearch = (searchQuery: string) => {
+    //If we are not sorting by search resort by sortbox
+    if (searchQuery === "") {
+      handlePublishSort(publishedSortType);
+    } else {
+      const newPublished = localSearchBlogs(publishedBlogs, searchQuery);
+      setPublishedBlogs(() => [...newPublished]);
+    }
   };
   return (
     <main>
@@ -111,15 +181,22 @@ const AccountContents: React.FC<PageProps> = () => {
       <BlogSwitch onChange={handleBlogSwitch} />
       {isEditing ? (
         <>
-          <div className="mx-auto max-w-five px-4 xl:px-0 flex gap-2xsmall">
+          <div className="mx-auto max-w-five px-4 xl:px-0 flex flex-col md:flex-row gap-2xsmall">
             <CreateBlogBtn onClick={handleCreateBlog}>Create Blog</CreateBlogBtn>
+            <SortBox onChange={handleDraftSort} initialSortType={draftSortType}>
+              <option value="lastUpdated">Last Updated</option>
+              <option value="lastCreated">Last Created</option>
+            </SortBox>
+            <div className="max-w-three w-full mt-3">
+              <SearchBar type="medium" onChange={handleDraftSearch} />
+            </div>
             {/* <CreateBlogBtn onClick={handleDeleteAll}>Delete All Blogs</CreateBlogBtn> */}
           </div>
           <Container className="gap-xsmall mt-med container mx-auto px-4 md:px-0 xl:max-w-five">
             {draftBlogs.map((props: any, i: number) => (
               <EditingWrapper
-                key={i}
-                published={props.published}
+                key={props.slug}
+                isPublished={props.isPublished}
                 onPublish={() => handlePublishBlog(props.slug)}
                 onDelete={() => {
                   // console.log("HELLOOOOOOOOOOO");
@@ -132,13 +209,24 @@ const AccountContents: React.FC<PageProps> = () => {
           </Container>
         </>
       ) : (
-        <Container className="gap-xsmall mt-med container mx-auto px-4 md:px-0 xl:max-w-five">
-          {publishedBlogs.map((props: any, i: number) => (
-            <PublishedWrapper key={i} onUnpublish={() => handleUnpublish(props.slug)}>
-              <BlogBox {...props} />
-            </PublishedWrapper>
-          ))}
-        </Container>
+        <div className="mx-auto max-w-five px-4 grid xl:px-0 flex gap-2xsmall">
+          <div className="flex gap-2xsmall">
+            <SortBox onChange={handlePublishSort} initialSortType={publishedSortType}>
+              <option value="lastPublished">Last Published</option>
+              <option value="lastInitialPublish">Last Initial Publish</option>
+            </SortBox>
+            <div className="max-w-three w-full mt-3">
+              <SearchBar type="medium" onChange={handlePublishSearch} />
+            </div>
+          </div>
+          <Container className="gap-xsmall mt-med container mx-auto px-4 md:px-0 xl:max-w-five">
+            {publishedBlogs.map((props: any) => (
+              <PublishedWrapper key={props.slug} onUnpublish={() => handleUnpublish(props.slug)}>
+                <BlogBox {...props} />
+              </PublishedWrapper>
+            ))}
+          </Container>
+        </div>
       )}
       <Footer className="mt-four" />
     </main>

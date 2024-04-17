@@ -13,10 +13,31 @@ interface BlogBoxProps {
   author: string;
   slug: string;
   blogPreview: BlogPreview;
+  firstPublishedDate?: Date;
+  lastUpdatedDate?: Date;
 }
 
-const BlogBox: React.FC<BlogBoxProps> = ({ author, slug, blogPreview }) => {
+const stringifyDate = (date: Date) =>
+  new Date(date).toLocaleDateString("en-US", {
+    weekday: "short", // abbreviated day of the week
+    year: "numeric", // numeric year
+    month: "short", // abbreviated month name
+    day: "numeric", // numeric day of the month
+  });
+
+const BlogBox: React.FC<BlogBoxProps> = ({ author, slug, blogPreview, firstPublishedDate, lastUpdatedDate }) => {
   // console.log({ author, slug, blogPreview });
+  const formattedDate = () => {
+    let workingDate = stringifyDate(new Date());
+    if (!firstPublishedDate || !lastUpdatedDate) return workingDate;
+    if (firstPublishedDate === lastUpdatedDate) {
+      workingDate = stringifyDate(new Date(firstPublishedDate));
+      return workingDate;
+    } else {
+      workingDate = stringifyDate(new Date(lastUpdatedDate)) + " (Updated)";
+      return workingDate;
+    }
+  };
   return (
     <Link to={slug}>
       <div className="blog-container">
@@ -37,7 +58,8 @@ const BlogBox: React.FC<BlogBoxProps> = ({ author, slug, blogPreview }) => {
               <h2 className="text-med jost lg:text-medlarge">{blogPreview.title}</h2>
               <p className="text-gray-600">{blogPreview.description}</p>
             </div>
-            <span aria-label="author" className="block mt-2xsmall">
+            <span className="text-gray-700">{formattedDate()}</span>
+            <span aria-label="author" className="block grid mt-2xsmall">
               <span className="text-gray-600">Written By:</span> {author}
             </span>
           </div>
@@ -51,7 +73,7 @@ interface EditingWrapperProps {
   children: React.ReactNode;
   onDelete: () => void;
   onPublish: () => void;
-  published: boolean;
+  isPublished: boolean;
 }
 
 const publishStyles = {
@@ -63,12 +85,12 @@ const republishStyles = {
   background: "var(--secondary)",
 };
 
-export const EditingWrapper: React.FC<EditingWrapperProps> = ({ children, onDelete, onPublish, published }) => {
+export const EditingWrapper: React.FC<EditingWrapperProps> = ({ children, onDelete, onPublish, isPublished }) => {
   return (
     <div className="w-full">
       <div className="flex justify-end relative">
-        <button className={"relative px-4 py-2 hover:contrast-125 hover:translate-y-[-1px] active:translate-y-0"} style={{ ...(published ? republishStyles : publishStyles) }} onClick={onPublish}>
-          {published ? "Re-Publish" : "Publish"}
+        <button className={"relative px-4 py-2 hover:contrast-125 hover:translate-y-[-1px] active:translate-y-0"} style={{ ...(isPublished ? republishStyles : publishStyles) }} onClick={onPublish}>
+          {isPublished ? "Re-Publish" : "Publish"}
         </button>
         <button className="relative px-4 py-2 bg-red-700 text-white hover:translate-y-[-1px] active:translate-y-0" onClick={onDelete}>
           Delete

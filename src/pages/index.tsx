@@ -3,12 +3,15 @@ import type { HeadFC, PageProps } from "gatsby";
 import { Container, Navbar, SearchBar, SiteBanner, BlogBox, Footer } from "../components";
 
 const IndexPage: React.FC<PageProps> = () => {
+  
+  const handleSearch = () => {};
+
   return (
     <main>
       <Navbar />
       <Container className="gap-med mt-med container mx-auto px-4 md:px-0 xl:max-w-five">
         <SiteBanner />
-        <SearchBar />
+        <SearchBar type="large" onChange={handleSearch} />
         <Container className="gap-xsmall"></Container>
       </Container>
       {/* <Footer className="mt-large" /> */}

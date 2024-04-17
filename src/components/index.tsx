@@ -15,3 +15,4 @@ export { default as ProfileImg } from "./ProfileImg/ProfileImg";
 export { default as Thumbnail } from "./Thumbnail/Thumbnail";
 export { default as SingleAccordion } from "./SingleAccordion/SingleAccordion";
 export { default as BlogSwitch } from "./BlogSwitch/BlogSwitch";
+export { default as SortBox } from "./SortBox/SortBox";
