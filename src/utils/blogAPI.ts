@@ -111,3 +111,32 @@ export const unpublishBlog = async <T>(slug: string): Promise<T> => {
     throw new Error("Couldnt get blog post...XD");
   }
 };
+
+export const getPublishedBlogs = async <T>(pageNumber: number, limit: number): Promise<T> => {
+  try {
+    const response: AxiosResponse<T> = await axios.post(`${baseURL}/blog/get-published-blogs`, { pageNumber, limit }, { withCredentials: true });
+    return response.data;
+  } catch (error) {
+    console.log({ error });
+    throw new Error("Couldnt get published blogs...XD");
+  }
+};
+export const getPageAmount = async <T>(limit: number): Promise<T> => {
+  try {
+    const response: AxiosResponse<T> = await axios.post(`${baseURL}/blog/get-page-amount`, { limit }, { withCredentials: true });
+    return response.data;
+  } catch (error) {
+    console.log({ error });
+    throw new Error("Couldnt get published blogs...XD");
+  }
+};
+
+export const searchPublishedBlogs = async <T>(pageNumber: number, searchQuery: string, limit: number): Promise<T> => {
+  try {
+    const response: AxiosResponse<T> = await axios.post(`${baseURL}/blog/search-published-blogs`, { page: pageNumber, limit, searchQuery }, { withCredentials: true });
+    return response.data;
+  } catch (error) {
+    console.log({ error });
+    throw new Error("Couldnt Search published Blogs...XD");
+  }
+};

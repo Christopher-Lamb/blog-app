@@ -30,7 +30,7 @@ const BlogBox: React.FC<BlogBoxProps> = ({ author, slug, blogPreview, firstPubli
   const formattedDate = () => {
     let workingDate = stringifyDate(new Date());
     if (!firstPublishedDate || !lastUpdatedDate) return workingDate;
-    if (firstPublishedDate === lastUpdatedDate) {
+    if (new Date(firstPublishedDate).toLocaleDateString() === new Date(lastUpdatedDate).toLocaleDateString()) {
       workingDate = stringifyDate(new Date(firstPublishedDate));
       return workingDate;
     } else {

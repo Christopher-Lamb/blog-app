@@ -22,6 +22,7 @@ interface BlogBoxProps {
   updatedAt?: string | number | Date;
 }
 function sortArrayByDate(arr: BlogBoxProps[], attribute: "createdAt" | "updatedAt" | "firstPublishedDate" | "lastUpdatedDate"): BlogBoxProps[] {
+  console.log({ attribute });
   return arr.sort((a, b) => {
     // Handle potential undefined dates by providing a default that sorts them last
     const dateA = new Date(a[attribute] || 0); // Converts undefined to Unix Epoch (very old date)
@@ -84,7 +85,16 @@ const AccountContents: React.FC<PageProps> = () => {
         const newlyPublishedBlog: any = draftBlogs.find((blog: BlogBoxProps) => blog.slug === slug);
         if (newlyPublishedBlog) {
           newlyPublishedBlog["isPublished"] = true;
-
+          //If this is the first time publishing this blog
+          if (!newlyPublishedBlog["firstPublishedDate"]) {
+            //We add the firstPublishDate
+            newlyPublishedBlog["firstPublishedDate"] = new Date();
+            newlyPublishedBlog["lastUpdatedDate"] = new Date();
+          } else {
+            // Else we pass the blog strictly as an update
+            newlyPublishedBlog["lastUpdatedDate"] = new Date();
+          }
+          //Insert blog into state
           const newDraftBlogs = draftBlogs.map((blog: BlogBoxProps) => {
             if (blog.slug === slug) {
               return newlyPublishedBlog;
@@ -98,12 +108,12 @@ const AccountContents: React.FC<PageProps> = () => {
         } else {
           const newPublishedBlogs = publishedBlogs.map((pubBlog) => {
             if (pubBlog.slug === slug) {
-              return { ...pubBlog, lastUpdatedDate: Date.now() };
+              return { ...pubBlog, lastUpdatedDate: new Date() };
             } else {
               return pubBlog;
             }
           });
-          // setPublishedBlogs(newPublishedBlogs);
+          setPublishedBlogs(() => [...newPublishedBlogs]);
         }
       }
     } catch (err) {}
@@ -146,12 +156,13 @@ const AccountContents: React.FC<PageProps> = () => {
     let arr: any = [];
     console.log({ sortType });
     setPublishedSortType(sortType);
-    if (sortType === "lastPublished") {
+    if (sortType === "latestPublish") {
       arr = sortArrayByDate(publishedBlogs, "lastUpdatedDate");
-    } else {
+    } else if (sortType === "newest") {
       arr = sortArrayByDate(publishedBlogs, "firstPublishedDate");
     }
-    console.log(arr);
+    // console.log(arr);
+    console.log(arr.map((item: any) => item.blogPreview.title).join("\n"));
     setPublishedBlogs(() => [...arr]);
   };
 
@@ -212,8 +223,8 @@ const AccountContents: React.FC<PageProps> = () => {
         <div className="mx-auto max-w-five px-4 grid xl:px-0 flex gap-2xsmall">
           <div className="flex gap-2xsmall">
             <SortBox onChange={handlePublishSort} initialSortType={publishedSortType}>
-              <option value="lastPublished">Last Published</option>
-              <option value="lastInitialPublish">Last Initial Publish</option>
+              <option value="latestPublish">Latest Publish</option>
+              <option value="newest">Newest</option>
             </SortBox>
             <div className="max-w-three w-full mt-3">
               <SearchBar type="medium" onChange={handlePublishSearch} />
