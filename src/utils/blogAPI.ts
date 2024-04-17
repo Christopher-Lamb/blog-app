@@ -95,10 +95,11 @@ export const getPublishedBlogsByAuthor = async <T>(): Promise<T> => {
 export const deleteBlog = async <T>(slug: string): Promise<T> => {
   try {
     const response: AxiosResponse<T> = await axios.post(`${baseURL}/blog/deleteBySlug`, { slug }, { withCredentials: true });
+    console.log({ response });
     return response.data;
   } catch (error) {
     console.log({ error });
-    throw new Error("Couldnt get blog post...XD");
+    throw new Error("Couldnt delete blog..XD");
   }
 };
 export const unpublishBlog = async <T>(slug: string): Promise<T> => {
