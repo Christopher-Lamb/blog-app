@@ -10,7 +10,7 @@ const ContentSelector: React.FC<ContentSelectorProps> = ({ onClick, className })
   return (
     <div className={"flex gap-s2xsmall outline outline-accent outline-1 rounded w-fit " + className}>
       <Button onClick={() => onClick("h2")} className="border-right">
-        Subheading
+        Heading
       </Button>
       <Button onClick={() => onClick("p")} className="border-right">
         Paragraph

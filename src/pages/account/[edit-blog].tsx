@@ -134,8 +134,6 @@ const CreateBlogContent = (props: PageProps) => {
         return workingStore[key];
       }
     });
-    //                                                  false                                             false                      delete
-    // .filter((obj) => obj.type !== "img" && obj.content !== "");
 
     //arr.filter((item)=> item.type !== 1) this will remove all items that equall one because it filters out every false
     //Send the objects to the backend
@@ -181,100 +179,97 @@ const CreateBlogContent = (props: PageProps) => {
   return (
     <main>
       <Navbar />
-      <div>hello brother</div>
-      {true && (
-        <DragDropContext onDragEnd={handleDragEnd}>
-          <div className="flex justify-end mx-auto max-w-five">
-            <div className="flex flex-col md:flex-row items-center gap-small">
-              <SaveButton onSave={handleSave} />
-            </div>
+      <DragDropContext onDragEnd={handleDragEnd}>
+        <div className="flex justify-end mx-auto max-w-five">
+          <div className="flex flex-col md:flex-row items-center gap-small">
+            <SaveButton onSave={handleSave} />
           </div>
-          <div className="flex flex-col items-start blog mt-med container mx-auto px-4 md:px-0 max-w-four min-h-[80vh]">
-            {blogItems["title"] && (
-              <>
-                {/* SLUG AND DESCRIPTION */}
-                <SingleAccordion title="Url, Description, and Thumbnail">
-                  <div className="grid w-full gap-3xsmall max-w-four p-4">
-                    <div className="grid">
-                      <label className="text-med w-fit" style={{ borderBottom: "2px solid rgba(0,0,0,.2)" }}>
-                        Slug or Url Path
-                      </label>
-                      <input className="p-3xsmall w-full text-small18 border" onChange={handleSlugChange} defaultValue={slugState}></input>
-                      <span className="p-3xsmall">slug preview: /{slugState}/</span>
-                    </div>
-                    <div className="grid">
-                      <label className="text-med w-fit" style={{ borderBottom: "2px solid rgba(0,0,0,.2)" }}>
-                        Brief Description
-                      </label>
-                      <textarea
-                        maxLength={300}
-                        onChange={(e) => handleTextChange("description", e.target.value)}
-                        className="h-[100px] resize-none w-full p-3xsmall border"
-                        defaultValue={initalObjRef.current["description"].content}
-                      />
-                    </div>
-                    <div className="max-w-three w-full">
-                      <label className="text-med">Thumbnail:</label>
-                      <Thumbnail handleChange={(file) => handleImgChange("thumbnail", file)} src={blogItems["thumbnail"].src} />
-                    </div>
+        </div>
+        <div className="flex flex-col items-start blog mt-med container mx-auto px-4 md:px-0 max-w-four min-h-[80vh]">
+          {blogItems["title"] && (
+            <>
+              {/* SLUG AND DESCRIPTION */}
+              <SingleAccordion title="Url, Description, and Thumbnail">
+                <div className="grid w-full gap-3xsmall max-w-four p-4">
+                  <div className="grid">
+                    <label className="text-med w-fit" style={{ borderBottom: "2px solid rgba(0,0,0,.2)" }}>
+                      Slug or Url Path
+                    </label>
+                    <input className="p-3xsmall w-full text-small18 border" onChange={handleSlugChange} defaultValue={slugState}></input>
+                    <span className="p-3xsmall">slug preview: /{slugState}/</span>
                   </div>
-                </SingleAccordion>
-                {/* <BlogBox /> */}
-                {/* TITLE AND SUBTITLE */}
-                <DynamicText
-                  className="w-full "
-                  placeholder="Headline"
-                  primaryElement={"h1"}
-                  secondaryElement={"none"}
-                  onChange={(text) => handleTextChange("title", text)}
-                  content={initalObjRef.current["title"].content}
-                ></DynamicText>
-                <DynamicText
-                  className="w-full"
-                  placeholder="Subheadline"
-                  primaryElement={"span"}
-                  id="subtitle"
-                  secondaryElement={"none"}
-                  onChange={(text) => handleTextChange("subtitle", text)}
-                  content={initalObjRef.current["subtitle"].content}
-                ></DynamicText>
-                <span id="author">Written by {userObj?.username}</span>
-                <span id="date">{formattedCurrentDate}</span>
-              </>
-            )}
-            {/* RENDER ALL Draggable Components */}
-            <Droppable droppableId="main">
-              {(provided, snapshot) => (
-                <div className="borderl w-full" ref={provided.innerRef} {...provided.droppableProps}>
-                  {blogItemIds.map((itemId, i) => (
-                    <DragWrapper id={itemId} index={i} key={itemId} type={blogItems[itemId].type} onDelete={handleDelete}>
-                      {blogItems[itemId].type === "image" ? (
-                        <ImgItem index={i} handleChange={(file, text) => handleImgChange(itemId, file, text)} content={blogItems[itemId].content} src={blogItems[itemId].src} />
-                      ) : (
-                        <DynamicText
-                          className="w-full"
-                          primaryElement={elementMap[blogItems[itemId].type]}
-                          secondaryElement={blogItems[itemId].type === "paragraph" ? "p" : "none"}
-                          onChange={(text) => {
-                            console.log(itemId);
-                            handleTextChange(itemId, text);
-                          }}
-                          placeholder={placeholderMap[blogItems[itemId].type]}
-                          content={initalObjRef.current[itemId].content}
-                        ></DynamicText>
-                      )}
-                    </DragWrapper>
-                  ))}
-
-                  {provided.placeholder}
+                  <div className="grid">
+                    <label className="text-med w-fit" style={{ borderBottom: "2px solid rgba(0,0,0,.2)" }}>
+                      Brief Description
+                    </label>
+                    <textarea
+                      maxLength={300}
+                      onChange={(e) => handleTextChange("description", e.target.value)}
+                      className="h-[100px] resize-none w-full p-3xsmall border"
+                      defaultValue={initalObjRef.current["description"].content}
+                    />
+                  </div>
+                  <div className="max-w-three w-full">
+                    <label className="text-med">Thumbnail:</label>
+                    <Thumbnail handleChange={(file) => handleImgChange("thumbnail", file)} src={blogItems["thumbnail"].src} />
+                  </div>
                 </div>
-              )}
-            </Droppable>
+              </SingleAccordion>
+              {/* <BlogBox /> */}
+              {/* TITLE AND SUBTITLE */}
+              <DynamicText
+                className="w-full "
+                placeholder="Headline"
+                primaryElement={"h1"}
+                secondaryElement={"none"}
+                onChange={(text) => handleTextChange("title", text)}
+                content={initalObjRef.current["title"].content}
+              ></DynamicText>
+              <DynamicText
+                className="w-full"
+                placeholder="Subheadline"
+                primaryElement={"span"}
+                id="subtitle"
+                secondaryElement={"none"}
+                onChange={(text) => handleTextChange("subtitle", text)}
+                content={initalObjRef.current["subtitle"].content}
+              ></DynamicText>
+              <span id="author">Written by {userObj?.username}</span>
+              <span id="date">{formattedCurrentDate}</span>
+            </>
+          )}
+          {/* RENDER ALL Draggable Components */}
+          <Droppable droppableId="main">
+            {(provided, snapshot) => (
+              <div className="borderl w-full" ref={provided.innerRef} {...provided.droppableProps}>
+                {blogItemIds.map((itemId, i) => (
+                  <DragWrapper id={itemId} index={i} key={itemId} type={blogItems[itemId].type} onDelete={handleDelete}>
+                    {blogItems[itemId].type === "image" ? (
+                      <ImgItem index={i} handleChange={(file, text) => handleImgChange(itemId, file, text)} content={blogItems[itemId].content} src={blogItems[itemId].src} />
+                    ) : (
+                      <DynamicText
+                        className="w-full h-fit"
+                        primaryElement={elementMap[blogItems[itemId].type]}
+                        secondaryElement={blogItems[itemId].type === "paragraph" ? "p" : "none"}
+                        onChange={(text) => {
+                          console.log(itemId);
+                          handleTextChange(itemId, text);
+                        }}
+                        placeholder={placeholderMap[blogItems[itemId].type]}
+                        content={initalObjRef.current[itemId].content}
+                      ></DynamicText>
+                    )}
+                  </DragWrapper>
+                ))}
 
-            <ContentSelector className="mt-3xsmall" onClick={handleAddBlogItem} />
-          </div>
-        </DragDropContext>
-      )}
+                {provided.placeholder}
+              </div>
+            )}
+          </Droppable>
+
+          <ContentSelector className="mt-3xsmall" onClick={handleAddBlogItem} />
+        </div>
+      </DragDropContext>
       {/* <Footer className="mt-large" /> */}
     </main>
   );
@@ -293,7 +288,7 @@ const DragWrapper: React.FC<DragWrapperProps> = ({ id, index, children, type, on
   let marginTop = "0";
   switch (type) {
     case "image":
-      marginTop = "my-4";
+      marginTop = "my-3";
       break;
     case "subheading":
       marginTop = "mb-[0.125rem] mt-2";
@@ -306,15 +301,28 @@ const DragWrapper: React.FC<DragWrapperProps> = ({ id, index, children, type, on
   return (
     <Draggable draggableId={id} index={index}>
       {(provided) => (
-        <div ref={provided.innerRef} {...provided.draggableProps} className={"flex gap-2s " + marginTop}>
+        <div ref={provided.innerRef} {...provided.draggableProps} className={"flex h-auto relative gap-2s " + marginTop}>
           {/* <div className="relative h-auto flex justify-center"></div> */}
           {children}
-          <div className="relative primary h-8 w-8 shrink-0 rounded" {...provided.dragHandleProps}>
-            <MdDragHandle size={"2rem"} />
-          </div>
-          <button onClick={() => onDelete(id)} className="relative shrink-0 accent h-8 w-8 flex items-center justify-center rounded">
-            <FaTrash size={"1rem"} />
-          </button>
+          {type === "image" ? (
+            <div className="absolute rights-0 flex">
+              <div className="relative primary h-8 w-8 shrink-0 rounded" {...provided.dragHandleProps}>
+                <MdDragHandle size={"2rem"} />
+              </div>
+              <button onClick={() => onDelete(id)} className="relative shrink-0 accent h-8 w-8 flex items-center justify-center rounded">
+                <FaTrash size={"1rem"} />
+              </button>
+            </div>
+          ) : (
+            <>
+              <div className="relative primary h-8 w-8 shrink-0 rounded" {...provided.dragHandleProps}>
+                <MdDragHandle size={"2rem"} />
+              </div>
+              <button onClick={() => onDelete(id)} className="relative shrink-0 accent h-8 w-8 flex items-center justify-center rounded">
+                <FaTrash size={"1rem"} />
+              </button>
+            </>
+          )}
         </div>
       )}
     </Draggable>

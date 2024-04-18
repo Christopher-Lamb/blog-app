@@ -17,14 +17,6 @@ function isLoginProps(obj: Partial<LoginProps>): obj is LoginProps {
 const LoginPage: React.FC<PageProps> = () => {
   const { checkAuthenticated, loginSuccess } = useAuthContext();
 
-  const handleBtn = async () => {
-    try {
-      const users = await getUser();
-      console.log(users);
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
   const handleAuthBtn = () => {
     if (checkAuthenticated) checkAuthenticated();
@@ -58,12 +50,7 @@ const LoginPage: React.FC<PageProps> = () => {
   return (
     <main>
       <Navbar />
-      <button className="p-4 border bg-blue-600 text-white font-semibold tracking-wide  rounded border-4 border-blue-700" onClick={handleBtn}>
-        Get Users
-      </button>
-      <button className="p-4 border bg-blue-600 text-white font-semibold tracking-wide  rounded border-4 border-blue-700" onClick={handleAuthBtn}>
-        Get Cookie
-      </button>
+
       <Form onSubmit={handleSubmit} className="grid gap-2xsmall p-2xsmall py-small sm:p-small md:p-med container xl:max-w-four mx-auto min-h-three bg-white text-black border border-primary mt-med">
         <h3 className="text-medlarge jost">Login</h3>
         <Label label="Username or Email" htmlFor="identifier">

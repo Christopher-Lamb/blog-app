@@ -99,6 +99,18 @@ html {
   line-height: 1.5rem;
 }
 
+.published-paragraph {
+  margin-bottom: 8px;
+}
+.published-subheading {
+  margin-top: 8px;
+  margin-bottom: 2px;
+}
+.published-image {
+  margin-top: 10px;
+  margin-bottom: 12px;
+}
+
 .blog span#subtitle {
   color: rgb(63, 63, 63);
   font-size: 1.125rem;
@@ -111,7 +123,7 @@ html {
   color: rgb(26, 26, 26);
 }
 
-.blog span#date{
+.blog span#date {
   font-size: 12px;
   font-weight: 600;
   color: rgb(26, 26, 26);

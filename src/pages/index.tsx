@@ -81,7 +81,7 @@ const IndexPage: React.FC<PageProps> = () => {
         <Container className="gap-xsmall">
           {publishedBlogs.map((blog) => (
             <>
-              <BlogBox {...blog} />
+              <BlogBox key={blog.slug} {...blog} />
             </>
           ))}
           <Pagination pageCount={pageAmount} onChange={handleChangePage} />

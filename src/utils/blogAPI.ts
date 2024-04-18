@@ -140,3 +140,13 @@ export const searchPublishedBlogs = async <T>(pageNumber: number, searchQuery: s
     throw new Error("Couldnt Search published Blogs...XD");
   }
 };
+
+export const getPublishedBySlug = async <T>(slug: string): Promise<T> => {
+  try {
+    const response: AxiosResponse<T> = await axios.post(`${baseURL}/blog/get-published-by-slug`, { slug: slug }, { withCredentials: true });
+    return response.data;
+  } catch (error) {
+    console.log({ error });
+    throw new Error("Couldnt Search published Blogs...XD");
+  }
+};
