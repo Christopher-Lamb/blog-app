@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, type HeadFC, type PageProps } from "gatsby";
 import { Navbar } from "../components";
-import { Form, Input, Label, Button } from "../components/Form";
+import { Form, Input, Label, Button } from "../components/FormTEST";
 import { loginUser, getUser } from "../utils/userAPI";
 import { useAuthContext } from "../context/AuthContext";
 
@@ -16,7 +16,6 @@ function isLoginProps(obj: Partial<LoginProps>): obj is LoginProps {
 
 const LoginPage: React.FC<PageProps> = () => {
   const { checkAuthenticated, loginSuccess } = useAuthContext();
-
 
   const handleAuthBtn = () => {
     if (checkAuthenticated) checkAuthenticated();
@@ -71,4 +70,4 @@ const LoginPage: React.FC<PageProps> = () => {
 
 export default LoginPage;
 
-export const Head: HeadFC = () => <title>Login</title>;
+export const Head: HeadFC = () => <title>The Public Post | Login</title>;

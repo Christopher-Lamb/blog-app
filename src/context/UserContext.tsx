@@ -81,7 +81,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   useEffect(() => {
-    console.log({ isAuthenticated });
+    // console.log({ isAuthenticated });
     if (isAuthenticated) {
       handleUserData();
     }

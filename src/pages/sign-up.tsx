@@ -1,7 +1,7 @@
 import React, { FormEvent } from "react";
 import type { HeadFC, PageProps } from "gatsby";
 import { Navbar } from "../components";
-import { Form, Input, Label, Button } from "../components/Form";
+import { Form, Input, Label, Button } from "../components/FormTEST";
 import { signupUser } from "../utils/userAPI";
 
 interface SignupProps {
@@ -32,7 +32,7 @@ const SignUpPage: React.FC<PageProps> = () => {
     let formObj: Partial<SignupProps> = {};
 
     formData.forEach((value, key) => {
-      console.log({ key, value });
+      // console.log({ key, value });
       // Ensure that the key is actually a key of SignupProps
       if (typeof value === "string") {
         formObj[key as keyof SignupProps] = value;
@@ -42,7 +42,7 @@ const SignUpPage: React.FC<PageProps> = () => {
     // Ensure all fields are present
     if (isSignupProps(formObj)) {
       await signupUser(formObj);
-      console.log(formObj);
+      // console.log(formObj);
     } else {
       console.error("Form is incomplete", formObj);
       // Handle incomplete form case (e.g., display a message to the user)
@@ -78,4 +78,4 @@ const SignUpPage: React.FC<PageProps> = () => {
 
 export default SignUpPage;
 
-export const Head: HeadFC = () => <title>Sign Up</title>;
+export const Head: HeadFC = () => <title>The Public Post | Sign Up</title>;

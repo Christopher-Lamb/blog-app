@@ -4,9 +4,10 @@ import { Authenticated, Navbar, DynamicText, Footer, ContentSelector, ImgItem, S
 import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautiful-dnd";
 import { MdDragHandle } from "react-icons/md";
 import { FaTrash } from "react-icons/fa";
-import { generateUID, moveItemDND } from "../../utils";
+import { generateUID, moveItemDND, h1Content } from "../../utils";
 import { getDraftBySlug, updateDraftBySlug, updateSlugBySlug } from "../../utils/blogAPI";
 import { useUserContext } from "../../context/UserContext";
+import { Helmet } from "react-helmet";
 
 interface BlogItem {
   _id: string;
@@ -38,14 +39,20 @@ const CreateBlogContent = (props: PageProps) => {
   const [blogItemIds, setBlogItemIds] = useState<string[]>([]);
   const { userObj } = useUserContext();
   const initalObjRef = useRef<Record<string, BlogItem>>({});
-  const slug = window.location.pathname.split("/")[2];
+  const slug =
+    typeof window !== "undefined"
+      ? window.location.pathname
+          .split("/")
+          .filter((i) => i)
+          .pop() || ""
+      : "";
   const [slugState, setSlugState] = useState(slug);
 
   // INIT
   useEffect(() => {
     const initBlog = async () => {
       const { draft }: { draft: BlogItem[] } = await getDraftBySlug(slug);
-      console.log({ draft });
+      // console.log({ draft });
       // Get the position of the body items where they have a position and then order the position and return only the ids
       const ids = draft
         .filter((draftItem): draftItem is BlogItem & { position: number } => draftItem.position !== undefined)
@@ -64,7 +71,7 @@ const CreateBlogContent = (props: PageProps) => {
       });
       setBlogItems(mappedBlogItems);
       initalObjRef.current = mappedBlogItems;
-      console.log({ blogItemIds, blogItems, initalObjRef });
+      // console.log({ blogItemIds, blogItems, initalObjRef });
     };
     initBlog();
   }, []);
@@ -152,7 +159,7 @@ const CreateBlogContent = (props: PageProps) => {
     // Handle if slug has changed
     if (slug !== slugState) {
       const newSlug = await updateSlugBySlug(slug, slugState);
-      window.location.replace("/account/" + newSlug);
+      typeof window !== "undefined" && window.location.replace("/account/" + newSlug);
     }
   };
 
@@ -178,6 +185,9 @@ const CreateBlogContent = (props: PageProps) => {
 
   return (
     <main>
+      <Helmet>
+        <title>{h1Content(blogItems["title"]?.content || "")} The Public Post</title>
+      </Helmet>
       <Navbar />
       <DragDropContext onDragEnd={handleDragEnd}>
         <div className="flex justify-end mx-auto max-w-five">
@@ -252,7 +262,7 @@ const CreateBlogContent = (props: PageProps) => {
                         primaryElement={elementMap[blogItems[itemId].type]}
                         secondaryElement={blogItems[itemId].type === "paragraph" ? "p" : "none"}
                         onChange={(text) => {
-                          console.log(itemId);
+                          // console.log(itemId);
                           handleTextChange(itemId, text);
                         }}
                         placeholder={placeholderMap[blogItems[itemId].type]}

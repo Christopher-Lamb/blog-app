@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 
-const baseURL = "http://localhost:8001";
+const baseURL = process.env.NODE_ENV === "development" ? "http://localhost:8001/api" : "https://krispywebsites.com/api";
 
 // Define a generic function for GET requests
 export const fetchData = async <T>(endpoint: string): Promise<T> => {
@@ -39,7 +39,7 @@ interface LoginProps {
 export const loginUser = async <T>({ identifier, password }: LoginProps): Promise<number> => {
   try {
     const response: AxiosResponse<T> = await axios.post(`${baseURL}/user/login`, { identifier, password }, { withCredentials: true });
-    console.log(response.status);
+    // console.log(response.status);
     return response.status;
   } catch (error) {
     throw new Error("Error during login");

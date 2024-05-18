@@ -75,17 +75,17 @@ const CreateBlogContent = (props: PageProps) => {
 
   const handleSave = () => {
     // AXIOS SAVE CONTENTS
-    console.log("Saved");
+    // console.log("Saved");
   };
 
   const handlePublish = (value: boolean) => {
     if (value) handleSave();
     // AXIOS PUBLISH === true
-    console.log(value);
+    // console.log(value);
   };
 
   const handleImgChange = (id: string, file: string | ArrayBuffer, text: string) => {
-    console.log({ id, file, text });
+    // console.log({ id, file, text });
     setBlogItems((prevItems) => ({ ...prevItems, [id]: { ...prevItems[id], content: text, src: file } }));
   };
 
@@ -143,7 +143,7 @@ const CreateBlogContent = (props: PageProps) => {
                         primaryElement={blogItems[itemId].type}
                         secondaryElement={blogItems[itemId].type === "p" ? "p" : "none"}
                         onChange={(s) => {
-                          console.log(s);
+                          // console.log(s);
                         }}
                         placeholder={placeholderMap[blogItems[itemId].type]}
                         content={blogItems[itemId].content}

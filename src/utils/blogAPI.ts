@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 
-const baseURL = "http://localhost:8001";
+const baseURL = process.env.NODE_ENV === "development" ? "http://localhost:8001/api" : "https://krispywebsites.com/api";
 
 interface Blog {
   title: string;
@@ -38,7 +38,7 @@ export const initAuthorsBlogs = async <T>(): Promise<T> => {
 export const getDraftBySlug = async <T>(slug: string): Promise<T> => {
   try {
     const response: AxiosResponse<T> = await axios.post(`${baseURL}/blog/draftBySlug`, { slug }, { withCredentials: true });
-    console.log({ response });
+    // console.log({ response });
     return response.data;
   } catch (err) {
     throw new Error("Couldnt Get Authors Blogs");
@@ -77,7 +77,7 @@ export const publishBlog = async <T>(slug: string): Promise<T> => {
     const response: AxiosResponse<T> = await axios.post(`${baseURL}/blog/publish-blog`, { slug }, { withCredentials: true });
     return response.data;
   } catch (error) {
-    console.log({ error });
+    // console.log({ error });
     throw new Error("Couldnt get blog post...XD");
   }
 };
@@ -87,7 +87,7 @@ export const getPublishedBlogsByAuthor = async <T>(): Promise<T> => {
     const response: AxiosResponse<T> = await axios.post(`${baseURL}/blog/published-by-author`, {}, { withCredentials: true });
     return response.data;
   } catch (error) {
-    console.log({ error });
+    // console.log({ error });
     throw new Error("Couldnt get blog post...XD");
   }
 };
@@ -95,10 +95,10 @@ export const getPublishedBlogsByAuthor = async <T>(): Promise<T> => {
 export const deleteBlog = async <T>(slug: string): Promise<T> => {
   try {
     const response: AxiosResponse<T> = await axios.post(`${baseURL}/blog/deleteBySlug`, { slug }, { withCredentials: true });
-    console.log({ response });
+    // console.log({ response });
     return response.data;
   } catch (error) {
-    console.log({ error });
+    // console.log({ error });
     throw new Error("Couldnt delete blog..XD");
   }
 };
@@ -107,7 +107,7 @@ export const unpublishBlog = async <T>(slug: string): Promise<T> => {
     const response: AxiosResponse<T> = await axios.post(`${baseURL}/blog/unpublish-blog`, { slug }, { withCredentials: true });
     return response.data;
   } catch (error) {
-    console.log({ error });
+    // console.log({ error });
     throw new Error("Couldnt get blog post...XD");
   }
 };
@@ -117,7 +117,7 @@ export const getPublishedBlogs = async <T>(pageNumber: number, limit: number): P
     const response: AxiosResponse<T> = await axios.post(`${baseURL}/blog/get-published-blogs`, { pageNumber, limit }, { withCredentials: true });
     return response.data;
   } catch (error) {
-    console.log({ error });
+    // console.log({ error });
     throw new Error("Couldnt get published blogs...XD");
   }
 };
@@ -126,7 +126,7 @@ export const getPageAmount = async <T>(limit: number): Promise<T> => {
     const response: AxiosResponse<T> = await axios.post(`${baseURL}/blog/get-page-amount`, { limit }, { withCredentials: true });
     return response.data;
   } catch (error) {
-    console.log({ error });
+    // console.log({ error });
     throw new Error("Couldnt get published blogs...XD");
   }
 };
@@ -136,7 +136,7 @@ export const searchPublishedBlogs = async <T>(pageNumber: number, searchQuery: s
     const response: AxiosResponse<T> = await axios.post(`${baseURL}/blog/search-published-blogs`, { page: pageNumber, limit, searchQuery }, { withCredentials: true });
     return response.data;
   } catch (error) {
-    console.log({ error });
+    // console.log({ error });
     throw new Error("Couldnt Search published Blogs...XD");
   }
 };
@@ -146,7 +146,7 @@ export const getPublishedBySlug = async <T>(slug: string): Promise<T> => {
     const response: AxiosResponse<T> = await axios.post(`${baseURL}/blog/get-published-by-slug`, { slug: slug }, { withCredentials: true });
     return response.data;
   } catch (error) {
-    console.log({ error });
+    // console.log({ error });
     throw new Error("Couldnt Search published Blogs...XD");
   }
 };

@@ -22,7 +22,7 @@ interface BlogBoxProps {
   updatedAt?: string | number | Date;
 }
 function sortArrayByDate(arr: BlogBoxProps[], attribute: "createdAt" | "updatedAt" | "firstPublishedDate" | "lastUpdatedDate"): BlogBoxProps[] {
-  console.log({ attribute });
+  // console.log({ attribute });
   return arr.sort((a, b) => {
     // Handle potential undefined dates by providing a default that sorts them last
     const dateA = new Date(a[attribute] || 0); // Converts undefined to Unix Epoch (very old date)
@@ -154,7 +154,7 @@ const AccountContents: React.FC<PageProps> = () => {
 
   const handlePublishSort = (sortType: string) => {
     let arr: any = [];
-    console.log({ sortType });
+    // console.log({ sortType });
     setPublishedSortType(sortType);
     if (sortType === "latestPublish") {
       arr = sortArrayByDate(publishedBlogs, "lastUpdatedDate");
@@ -162,7 +162,7 @@ const AccountContents: React.FC<PageProps> = () => {
       arr = sortArrayByDate(publishedBlogs, "firstPublishedDate");
     }
     // console.log(arr);
-    console.log(arr.map((item: any) => item.blogPreview.title).join("\n"));
+    // console.log(arr.map((item: any) => item.blogPreview.title).join("\n"));
     setPublishedBlogs(() => [...arr]);
   };
 

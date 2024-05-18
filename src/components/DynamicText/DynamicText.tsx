@@ -38,7 +38,7 @@ const DynamicText: React.FC<DynamicTextProps> = ({ primaryElement = "p", seconda
     formatSpan();
 
     // useEffect(() => {
-    //   console.log("IDK WHEN IT CHANGED")
+    // console.log("IDK WHEN IT CHANGED")
     // }, [isPlaceholder]);
 
     if (inputChar) {

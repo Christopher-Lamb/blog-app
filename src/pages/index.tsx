@@ -41,7 +41,7 @@ const IndexPage: React.FC<PageProps> = () => {
   ); // 500 ms throttle time
 
   const handleSearch = (searchQuery: string) => {
-    console.log(searchQuery); // Optional: logging the query for debug purposes
+    // console.log(searchQuery); // Optional: logging the query for debug purposes
     setCurrentSearchQuery(searchQuery);
     throttledSearch(searchQuery, pageNumber, limit);
   };
@@ -80,9 +80,7 @@ const IndexPage: React.FC<PageProps> = () => {
         <SearchBar type="large" onChange={handleSearch} />
         <Container className="gap-xsmall">
           {publishedBlogs.map((blog) => (
-            <>
-              <BlogBox key={blog.slug} {...blog} />
-            </>
+            <BlogBox key={blog.slug} {...blog} />
           ))}
           <Pagination pageCount={pageAmount} onChange={handleChangePage} />
         </Container>
@@ -94,4 +92,4 @@ const IndexPage: React.FC<PageProps> = () => {
 
 export default IndexPage;
 
-export const Head: HeadFC = () => <title>Home</title>;
+export const Head: HeadFC = () => <title>The Public Post | Home</title>;
