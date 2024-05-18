@@ -1,7 +1,7 @@
 import React, { FormEvent } from "react";
 import type { HeadFC, PageProps } from "gatsby";
 import { Navbar } from "../components";
-import { Form, Input, Label, Button } from "../components/FormTEST";
+import { Form, Input, Label, Button } from "../components/Form";
 import { signupUser } from "../utils/userAPI";
 
 interface SignupProps {

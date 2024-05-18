@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, type HeadFC, type PageProps } from "gatsby";
 import { Navbar } from "../components";
-import { Form, Input, Label, Button } from "../components/FormTEST";
+import { Form, Input, Label, Button } from "../components/Form";
 import { loginUser, getUser } from "../utils/userAPI";
 import { useAuthContext } from "../context/AuthContext";
 
